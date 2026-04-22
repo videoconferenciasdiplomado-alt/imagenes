@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image-more/3.5.0/dom-to-image-more.min.js"></script>
     <style>
       :root {
         --naranja: #ff6600;
@@ -382,33 +382,35 @@
         const nameInput = document.getElementById("in-name").value.trim();
         const fileName = nameInput ? `Firma - ${nameInput}.png` : "Firma - EDUMIN.png";
 
-        // Cambiamos el texto del botón temporalmente para dar feedback visual
         const btn = document.querySelector(".btn-download");
-        const originalText = btn.innerText;
-        btn.innerText = "GENERANDO...";
+        btn.innerText = "PROCESANDO...";
         btn.disabled = true;
 
-        document.fonts.ready.then(() => {
-          // Un pequeño retraso de 300ms permite que el navegador termine de "pintar" la fuente de Google
-          setTimeout(() => {
-            html2canvas(box, {
-              scale: 2,
-              useCORS: true, // Fundamental para las imágenes de Github (tu logo)
-              // allowTaint: true, <- ELIMINADO para evitar bloqueos del toDataURL
-              backgroundColor: "#ffffff",
-              logging: false,
-            }).then((canvas) => {
-              const link = document.createElement("a");
-              link.download = fileName;
-              link.href = canvas.toDataURL("image/png");
-              link.click();
+        // domtoimage es mucho más fiel a las fuentes de Google
+        domtoimage
+          .toPng(box, {
+            width: 600,
+            height: 150,
+            style: {
+              transform: "scale(1)", // Asegura que no haya zooms raros
+              left: 0,
+              top: 0,
+            },
+          })
+          .then(function (dataUrl) {
+            const link = document.createElement("a");
+            link.download = fileName;
+            link.href = dataUrl;
+            link.click();
 
-              // Restauramos el botón
-              btn.innerText = originalText;
-              btn.disabled = false;
-            });
-          }, 300);
-        });
+            btn.innerText = "DESCARGAR FIRMA";
+            btn.disabled = false;
+          })
+          .catch(function (error) {
+            console.error("Error al generar la imagen:", error);
+            btn.innerText = "ERROR";
+            btn.disabled = false;
+          });
       }
     </script>
   </body>
