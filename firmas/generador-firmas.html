@@ -6,119 +6,207 @@
     <title>Generador de firmas EDUMIN</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0");
+
       :root {
         --naranja: #ff6600;
-        --naranja-claro: rgba(255, 102, 0, 0.08);
         --gris: #666666;
-        --gris-claro: #f4f4f4;
+        --gris-claro: #e0e0e0;
         --negro: #1a1a1a;
         --blanco: #ffffff;
+        --borde-gris: 1px solid #ddd;
+        --logo-width: 95px;
+        --logo-margin-x: 12px;
+        --grid-gap: 18px;
+        --text-padding-left: calc(var(--logo-width) + (var(--logo-margin-x) * 2) + var(--grid-gap));
+        --transition-fast: 0.2s ease;
+        --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       body {
         font-family: "Outfit", sans-serif;
-        background-color: #f0f2f5;
+        background-color: #f8fafc;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 20px;
+        padding: 25px;
         margin: 0;
+        min-height: 100vh;
+        box-sizing: border-box;
+        justify-content: center;
+        position: relative;
+        overflow-x: hidden;
       }
-
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, transparent 25%, #f8fafc 70%);
+        z-index: -1;
+        pointer-events: none;
+        background-color: rgba(255, 102, 0, 0.1);
+        -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/signature/default/24px.svg");
+        mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/signature/default/48px.svg");
+        --icon-size: 45px;
+        -webkit-mask-size: var(--icon-size) var(--icon-size);
+        mask-size: var(--icon-size) var(--icon-size);
+        transform-origin: center;
+        -webkit-mask-repeat: repeat;
+        mask-repeat: repeat;
+        transform: rotate(-15deg);
+        width: 150%;
+        height: 150%;
+        top: -25%;
+        left: -25%;
+      }
       .card {
         background: white;
-        padding: 30px;
+        padding: 35px;
+        padding-top: 0;
         border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         width: 100%;
-        max-width: 650px;
+        max-width: fit-content;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        max-height: 90vh;
+        overflow-y: auto;
       }
-
       h2 {
         color: var(--naranja);
         text-align: center;
         margin-bottom: 25px;
-        font-weight: 800;
+        font-weight: 900;
+        font-size: 32px;
+        margin-top: 0;
+        text-wrap: balance;
+        display: block;
+        justify-content: center;
+        align-items: center;
+        gap: 0;
+        line-height: 1;
+        /* PROPIEDADES PARA FIJARLO */
+        padding: 35px 0 20px;
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 100;
+        margin-bottom: 20px;
+        border-bottom: var(--borde-gris);
       }
-
+      h2::after {
+        content: "_";
+        color: var(--negro);
+        animation: parpadeo 1s infinite step-end;
+        display: inline-block;
+      }
+      @keyframes parpadeo {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
       .form-group {
-        margin-bottom: 15px;
+        margin-bottom: 20px;
+        transition: all var(--transition-fast);
       }
       label {
         display: block;
         font-weight: 600;
         margin-bottom: 5px;
         color: var(--gris);
-        font-size: 14px;
+        font-size: 18px;
+        text-wrap: balance;
       }
       input {
         width: 100%;
         padding: 12px;
-        border: 1px solid #ddd;
+        border: var(--borde-gris);
         border-radius: 6px;
         box-sizing: border-box;
-        font-size: 15px;
+        font-size: 16px;
         font-family: "Outfit", sans-serif;
-        transition: border-color 0.3s;
+        transition:
+          border-color var(--transition-normal),
+          box-shadow var(--transition-normal);
+      }
+      input:not(:placeholder-shown) {
+        padding-right: 30px;
       }
       input:focus {
         border-color: var(--naranja);
+        box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.1);
         outline: none;
       }
-
-      /* Contenedor de la Firma */
+      #out-name,
+      #out-cargo,
+      #out-phone,
+      #out-email {
+        transition: all var(--transition-fast);
+      }
       #signature-container {
-        margin-top: 30px;
+        margin-top: 25px;
         display: flex;
-        justify-content: center;
+        justify-content: safe center;
         background: #e9ecef;
         padding: 20px;
-        border-radius: 8px;
+        border-radius: 6px;
+        overflow-x: auto; /* Permite scroll si la pantalla es muy chica */
+        box-sizing: border-box;
+        width: 100%;
       }
 
-      /* Caja de la Firma */
       #signature-box {
-        width: 600px;
-        height: 150px;
+        width: 650px;
+        min-width: 650px;
+        min-height: 150px;
+        height: auto;
         background-color: var(--blanco);
         display: flex;
+        flex-direction: column;
         align-items: center;
         box-sizing: border-box;
         position: relative;
         overflow: hidden;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-
-        /* --- FONTO TEMPORAL DE DISEÑO --- */
-        background-repeat: no-repeat;
-        background-position: right center; /* Alineado al lado derecho */
-        background-size: contain;
+        padding: 25px;
+        justify-content: center;
       }
 
-      /* --- Contenido Principal (Sobre el fondo) --- */
       .content-wrapper {
         display: flex;
-        width: 100%;
-        padding: 0;
+        flex-direction: column;
         z-index: 10;
-        align-items: center;
-        justify-content: center; /* Centra el grupo logo + línea + info */
+        align-items: flex-start;
       }
       .logo-section {
+        grid-column: 1;
+        grid-row: 2;
         width: fit-content;
         display: flex;
         justify-content: center;
+        align-items: center;
       }
       .logo-section img {
-        width: 105px;
+        width: var(--logo-width);
         height: auto;
+        margin: 0 var(--logo-margin-x);
       }
       .info-section {
-        width: 270px;
-        flex-grow: 0;
+        grid-column: 3;
+        grid-row: 2;
+        width: 360px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -126,33 +214,53 @@
       }
 
       .vertical-line {
+        grid-column: 2;
+        grid-row: 2;
         width: 4px;
-        height: 95px;
+        height: 75px;
         background: linear-gradient(180deg, #ff8c00 0%, #ff4500 100%);
         border-radius: 10px;
-        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
-        flex-shrink: 0;
-        margin: 0 24px;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        margin-left: 2px;
+      }
+
+      .text-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 6px;
+        margin-bottom: 15px;
+        padding-left: var(--text-padding-left);
+        box-sizing: border-box;
+        width: 0;
+        white-space: nowrap;
       }
       .name-area {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 700;
         color: var(--negro);
         line-height: 1;
         white-space: nowrap;
-        width: 330px;
-        display: block;
-        margin-bottom: 6px;
-        transform-origin: left center; /* El texto se encoge hacia la izquierda */
+        transform-origin: left center;
       }
-
+      #out-email {
+        display: inline-block;
+        white-space: nowrap;
+        transform-origin: left center;
+      }
+      #in-email {
+        text-transform: lowercase;
+      }
       .contact-item {
         display: flex;
         align-items: center;
         color: var(--gris);
         font-size: 14px;
-        font-weight: 500;
+        font-weight: 400;
         line-height: 1;
+        gap: 8px;
+        width: 100%;
       }
       .icon-circle {
         background-color: var(--naranja);
@@ -162,7 +270,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 10px;
+        flex-shrink: 0;
       }
       .icon-circle .material-symbols-outlined {
         color: white;
@@ -175,12 +283,14 @@
         padding: 15px;
         width: 100%;
         border-radius: 6px;
-        font-weight: 700;
+        font-weight: 600;
         font-size: 16px;
         font-family: "Outfit", sans-serif;
         cursor: pointer;
-        margin-top: 20px;
-        transition: background-color 0.3s;
+        margin-top: 25px;
+        transition: all var(--transition-normal);
+        will-change: transform;
+        line-height: 1;
       }
       .btn-download:hover {
         background-color: var(--naranja);
@@ -188,27 +298,29 @@
       .input-container {
         display: flex;
         align-items: center;
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        padding-left: 12px;
-        transition: border-color 0.3s;
+        gap: 8px;
+        background: transparent;
+        border: none;
       }
       .input-container:focus-within {
         border-color: var(--naranja);
       }
       .prefix {
+        background: white;
+        border: var(--borde-gris);
+        border-radius: 6px;
+        padding: 12px;
+        min-width: 25px;
+        text-align: center;
         color: var(--negro);
-        font-weight: 400;
         font-size: 15px;
-        margin-right: 5px;
         user-select: none;
       }
-      .input-container input {
-        border: none !important;
-        padding-left: 5px;
+
+      .input-container .input-wrapper:focus-within {
+        border-color: var(--naranja);
       }
-      /* --- NUEVOS ELEMENTOS DECORATIVOS (Estilo Online Viewer) --- */
+
       .corner-decor {
         position: absolute;
         width: 180px;
@@ -229,7 +341,7 @@
       .shapes-group {
         position: absolute;
         top: -105px;
-        left: -115px;
+        left: -120px;
         width: 100%;
         height: 100%;
         display: flex;
@@ -250,7 +362,7 @@
         aspect-ratio: 1 / 1;
         background: linear-gradient(135deg, #1a1c20 0%, #000000 100%);
         z-index: 3;
-        --opacidad: 0.3; /* Valor original */
+        --opacidad: 0.3;
       }
       .shape-orange {
         width: 110px;
@@ -258,7 +370,7 @@
         background: linear-gradient(135deg, #ff8c00 0%, #ff4500 100%);
         z-index: 2;
         margin-left: calc(-101px + var(--gap));
-        --opacidad: 0.2; /* Valor diferente */
+        --opacidad: 0.2;
       }
       .shape-grey {
         width: 70px;
@@ -266,7 +378,186 @@
         background: linear-gradient(135deg, #e0e0e0 0%, #9e9e9e 100%);
         margin-left: calc(-62px + var(--gap));
         z-index: 1;
-        --opacidad: 0.1; /* Otro valor */
+        --opacidad: 0.1;
+      }
+      .main-layout {
+        z-index: 10;
+        position: relative;
+        display: grid;
+        grid-template-columns: auto auto auto;
+        justify-content: center;
+        align-items: center;
+        column-gap: var(--grid-gap);
+      }
+
+      .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .clear-btn {
+        position: absolute;
+        right: 12px;
+        cursor: pointer;
+        color: #ccc;
+        font-size: 20px;
+        font-weight: 400;
+        display: none;
+        user-select: none;
+        text-align: center;
+        width: 12px;
+        transition: all var(--transition-normal);
+      }
+
+      .clear-btn:hover {
+        color: var(--naranja);
+      }
+
+      input:not(:placeholder-shown) + .clear-btn {
+        display: block;
+      }
+      .btn-clear-all {
+        background-color: var(--gris-claro);
+        color: var(--gris);
+        border: none;
+        padding: 15px;
+        width: 100%;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 16px;
+        font-family: "Outfit", sans-serif;
+        cursor: pointer;
+        margin-top: 15px;
+        transition: all var(--transition-normal);
+        will-change: transform;
+        line-height: 1;
+      }
+
+      .btn-clear-all:hover {
+        background-color: #d0d0d0;
+        color: var(--negro);
+      }
+
+      .label-cargo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        font-size: 16px;
+        color: var(--gris);
+        font-weight: 600;
+        user-select: none;
+        margin: 0;
+      }
+
+      #group-cargo label,
+      .texto-label {
+        opacity: 0.75;
+      }
+
+      .checkbox-wrapper {
+        position: relative;
+        width: 18px;
+        aspect-ratio: 1 / 1;
+        flex-shrink: 0;
+        align-items: center;
+      }
+
+      .checkbox-wrapper input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+
+      .checkbox-custom {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 18px;
+        aspect-ratio: 1 / 1;
+        background-color: var(--blanco);
+        border: var(--borde-gris);
+        border-radius: 6px;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .label-cargo:hover input ~ .checkbox-custom {
+        border-color: var(--naranja);
+      }
+
+      .checkbox-wrapper input:checked ~ .checkbox-custom {
+        background-color: var(--naranja);
+        border-color: var(--naranja);
+      }
+
+      .checkbox-custom:after {
+        content: "";
+        display: none;
+        width: 4px;
+        height: 8px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+        margin-top: -2px;
+      }
+
+      .checkbox-wrapper input:checked ~ .checkbox-custom:after {
+        display: block;
+      }
+      .input-auto-width {
+        width: auto;
+      }
+
+      #out-cargo {
+        font-size: 18px;
+        color: var(--naranja);
+        font-weight: 600;
+        white-space: nowrap;
+        line-height: 1;
+        transform-origin: left center;
+      }
+
+      .full-width {
+        width: 100%;
+      }
+      .btn-download:active,
+      .btn-clear-all:active {
+        transform: scale(0.98);
+      }
+      .btn-download,
+      .btn-clear-all {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+      }
+
+      #group-cargo {
+        display: block !important;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        margin-bottom: 0;
+        transition:
+          max-height var(--transition-normal),
+          opacity var(--transition-normal),
+          margin-bottom var(--transition-normal);
+      }
+
+      #group-cargo.show {
+        max-height: 200px;
+        opacity: 1;
+        margin-bottom: 20px;
+      }
+
+      .hidden {
+        display: none;
       }
     </style>
   </head>
@@ -276,24 +567,79 @@
 
       <div class="form-group">
         <label>Nombre de la persona o del área:</label>
-        <input type="text" id="in-name" placeholder="Ej. Juana Pérez / Área EDUMIN" oninput="update()" />
+        <div class="input-wrapper">
+          <input type="text" id="in-name" placeholder="Ej. Juana Pérez / Área EDUMIN" oninput="update()" />
+          <span class="clear-btn" onclick="clearInput('in-name')">&times;</span>
+        </div>
       </div>
 
+      <div class="form-group" id="container-cargo">
+        <label class="label-cargo">
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="check-cargo" onchange="toggleCargo()" />
+            <span class="checkbox-custom"></span>
+          </div>
+          <span class="texto-label">Añadir puesto o descripción</span>
+        </label>
+      </div>
+
+      <div id="group-cargo" class="form-group hidden">
+        <label>Puesto o descripción:</label>
+        <div class="input-wrapper">
+          <input type="text" id="in-cargo" placeholder="Ej. Asesor/a académico/a" oninput="update()" />
+          <span class="clear-btn" onclick="clearInput('in-cargo')">&times;</span>
+        </div>
+      </div>
       <div class="form-group">
         <label>Número de celular o WhatsApp:</label>
         <div class="input-container">
           <span class="prefix">+51</span>
-          <input type="text" id="in-phone" placeholder="999 999 999" maxlength="11" oninput="formatPhone(this)" />
+          <div class="input-wrapper full-width">
+            <input type="text" id="in-phone" placeholder="999 999 999" maxlength="11" oninput="formatPhone(this)" />
+            <span class="clear-btn" onclick="clearInput('in-phone')">&times;</span>
+          </div>
         </div>
       </div>
 
       <div class="form-group">
         <label>Correo electrónico:</label>
-        <input type="email" id="in-email" placeholder="correo@edumin.pe" oninput="update()" />
+        <div class="input-wrapper">
+          <input type="email" id="in-email" placeholder="correoelectronico@edumin.pe" oninput="validateEmailInput(this)" onkeypress="return event.charCode !== 32;" />
+          <span class="clear-btn" onclick="clearInput('in-email')">&times;</span>
+        </div>
       </div>
 
       <div id="signature-container">
         <div id="signature-box">
+          <div class="content-wrapper">
+            <div class="text-container">
+              <div class="name-area" id="out-name">Nombre o área</div>
+              <div id="out-cargo" class="hidden">Cargo o descripción</div>
+            </div>
+
+            <div class="main-layout">
+              <div class="logo-section">
+                <img src="https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/master/logo%20negro%20edumin.png" crossorigin="anonymous" alt="Logo" />
+              </div>
+
+              <div class="vertical-line"></div>
+
+              <div class="info-section">
+                <div class="contact-item">
+                  <div class="icon-circle"><span class="material-symbols-outlined">call</span></div>
+                  <span id="out-phone">+51 999 999 999</span>
+                </div>
+                <div class="contact-item">
+                  <div class="icon-circle"><span class="material-symbols-outlined">mail</span></div>
+                  <span id="out-email">correoelectronico@edumin.pe</span>
+                </div>
+                <div class="contact-item">
+                  <div class="icon-circle"><span class="material-symbols-outlined">language</span></div>
+                  <span>www.edumin.pe</span>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="corner-decor corner-top-left">
             <div class="shapes-group">
               <div class="shape shape-dark"></div>
@@ -309,46 +655,19 @@
               <div class="shape shape-grey"></div>
             </div>
           </div>
-          <div class="content-wrapper">
-            <div class="logo-section">
-              <img src="https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/master/logo%20negro%20edumin.png" crossorigin="anonymous" alt="Logo" />
-            </div>
-            <div class="vertical-line"></div>
-            <div class="info-section">
-              <div class="name-area" id="out-name">Nombre o Área</div>
-
-              <div class="contact-item">
-                <div class="icon-circle"><span class="material-symbols-outlined">call</span></div>
-                <span id="out-phone">+51 999 999 999</span>
-              </div>
-
-              <div class="contact-item">
-                <div class="icon-circle"><span class="material-symbols-outlined">mail</span></div>
-                <span id="out-email">correo@edumin.pe</span>
-              </div>
-
-              <div class="contact-item">
-                <div class="icon-circle"><span class="material-symbols-outlined">language</span></div>
-                <span>www.edumin.pe</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
-      <button class="btn-download" onclick="download()">DESCARGAR FIRMA</button>
+      <button class="btn-download" onclick="download(event)">Descargar firma</button>
+      <button class="btn-clear-all" onclick="clearAllFields()">Limpiar datos</button>
     </div>
 
     <script>
-      // Formateo del número de teléfono en bloques de 3
       function formatPhone(input) {
-        // Solo permitimos números
         let val = input.value.replace(/\D/g, "");
 
-        // Si empieza con 51, se lo quitamos para no duplicar
         if (val.startsWith("51")) val = val.substring(2);
 
-        // Formateamos en bloques de 3
         let formatted = val.match(/.{1,3}/g);
         input.value = formatted ? formatted.join(" ") : "";
 
@@ -358,54 +677,142 @@
       function update() {
         const nameElement = document.getElementById("out-name");
         const nameInput = document.getElementById("in-name").value;
+        const cargoElement = document.getElementById("out-cargo");
+        const cargoInput = document.getElementById("in-cargo").value;
+        const isCargoActive = document.getElementById("check-cargo").checked;
 
-        nameElement.innerText = nameInput || "Nombre o Área";
-        nameElement.style.transform = "none";
+        nameElement.innerText = nameInput || "Nombre o área";
+        if (isCargoActive) {
+          cargoElement.innerText = cargoInput || "Puesto o descripción";
+        }
 
-        const MAX_WIDTH = 330;
+        nameElement.style.transform = "scaleX(1)";
+        cargoElement.style.transform = "scaleX(1)";
 
-        const realWidth = nameElement.scrollWidth;
+        const MAX_WIDTH = 420; // El ancho límite que definiste
 
-        if (realWidth > MAX_WIDTH) {
-          const scaleFactor = MAX_WIDTH / realWidth;
-          nameElement.style.transform = `scaleX(${scaleFactor})`;
+        const realWidthName = nameElement.scrollWidth;
+        const scaleName = realWidthName > MAX_WIDTH ? MAX_WIDTH / realWidthName : 1;
+
+        let scaleCargo = 1;
+        if (isCargoActive) {
+          const realWidthCargo = cargoElement.scrollWidth;
+          scaleCargo = realWidthCargo > MAX_WIDTH ? MAX_WIDTH / realWidthCargo : 1;
+        }
+
+        const finalScale = Math.min(scaleName, scaleCargo);
+
+        nameElement.style.transform = `scaleX(${finalScale})`;
+        nameElement.style.transformOrigin = "left center";
+
+        if (isCargoActive) {
+          cargoElement.style.transform = `scaleX(${finalScale})`;
+          cargoElement.style.transformOrigin = "left center";
         }
 
         const phoneVal = document.getElementById("in-phone").value;
         document.getElementById("out-phone").innerText = phoneVal ? "+51 " + phoneVal : "+51 999 999 999";
-        document.getElementById("out-email").innerText = document.getElementById("in-email").value || "correo@edumin.pe";
+
+        const emailElement = document.getElementById("out-email");
+        emailElement.innerText = document.getElementById("in-email").value || "correoelectronico@edumin.pe";
+        emailElement.style.transform = "scaleX(1)";
+
+        const MAX_EMAIL_WIDTH = 295;
+        const realEmailWidth = emailElement.scrollWidth;
+        if (realEmailWidth > MAX_EMAIL_WIDTH) {
+          const emailScaleFactor = MAX_EMAIL_WIDTH / realEmailWidth;
+          emailElement.style.transform = `scaleX(${emailScaleFactor})`;
+        }
       }
 
-      function download() {
-        const box = document.getElementById("signature-box");
+      function download(event) {
         const nameInput = document.getElementById("in-name").value.trim();
-        const fileName = nameInput ? `Firma - ${nameInput}.png` : "Firma - EDUMIN.png";
+        const phoneInput = document.getElementById("in-phone").value.trim();
+        const emailInput = document.getElementById("in-email").value.trim();
+        const cargoInput = document.getElementById("in-cargo").value.trim();
+        const isCargoChecked = document.getElementById("check-cargo").checked;
 
+        // Shortcut: Si presionas Ctrl + Shift al hacer clic, descarga sin validar
+        const isShortcut = event && event.ctrlKey && event.shiftKey;
+
+        if (!isShortcut) {
+          // Validación de campos básicos
+          if (!nameInput || !phoneInput || !emailInput) {
+            alert("Por favor, completa todos los campos (Nombre, Teléfono y Email) antes de descargar.");
+            return;
+          }
+
+          // Validación de cargo si el checkbox está activo
+          if (isCargoChecked && !cargoInput) {
+            alert("Has marcado la opción de puesto/descripción, por favor rellena el campo o desactiva la casilla.");
+            return;
+          }
+        }
+
+        // --- Proceso de descarga original ---
+        const box = document.getElementById("signature-box");
+        const fileName = nameInput ? `Firma - ${nameInput}.png` : "Firma - EDUMIN.png";
         const btn = document.querySelector(".btn-download");
-        btn.innerText = "PROCESANDO...";
+
+        btn.innerText = "Procesando…";
         btn.disabled = true;
 
-        // htmlToImage maneja mejor las fuentes externas
-        htmlToImage
-          .toPng(box, {
-            quality: 1,
-            pixelRatio: 2, // Mejora la calidad (HD)
-            cacheBust: true,
-          })
-          .then(function (dataUrl) {
-            const link = document.createElement("a");
-            link.download = fileName;
-            link.href = dataUrl;
-            link.click();
+        setTimeout(() => {
+          htmlToImage
+            .toPng(box, {
+              quality: 1,
+              pixelRatio: 2,
+              cacheBust: true,
+            })
+            .then(function (dataUrl) {
+              const link = document.createElement("a");
+              link.download = fileName;
+              link.href = dataUrl;
+              link.click();
 
-            btn.innerText = "DESCARGAR FIRMA";
-            btn.disabled = false;
-          })
-          .catch(function (error) {
-            console.error("Error al generar la imagen:", error);
-            btn.innerText = "ERROR";
-            btn.disabled = false;
-          });
+              btn.innerText = "Descargar firma";
+              btn.disabled = false;
+            })
+            .catch(function (error) {
+              console.error("Error al generar la imagen:", error);
+              btn.innerText = "Error";
+              btn.disabled = false;
+            });
+        }, 500);
+      }
+      function clearInput(id) {
+        const input = document.getElementById(id);
+        input.value = "";
+        input.focus();
+        update();
+      }
+
+      function validateEmailInput(input) {
+        input.value = input.value.toLowerCase().replace(/\s+/g, "");
+        update();
+      }
+      function clearAllFields() {
+        document.getElementById("in-name").value = "";
+        document.getElementById("in-phone").value = "";
+        document.getElementById("in-email").value = "";
+        document.getElementById("in-cargo").value = "";
+        document.getElementById("check-cargo").checked = false;
+        toggleCargo();
+      }
+      function toggleCargo() {
+        const isChecked = document.getElementById("check-cargo").checked;
+        const groupCargo = document.getElementById("group-cargo");
+        const outCargo = document.getElementById("out-cargo");
+
+        if (isChecked) {
+          groupCargo.classList.add("show");
+          outCargo.classList.remove("hidden");
+        } else {
+          groupCargo.classList.remove("show");
+          outCargo.classList.add("hidden");
+          document.getElementById("in-cargo").value = "";
+        }
+        update();
       }
     </script>
   </body>
