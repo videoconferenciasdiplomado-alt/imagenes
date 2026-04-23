@@ -4,8 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Generador de firmas EDUMIN</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 
     <style>
@@ -44,15 +42,11 @@
       body::before {
         content: "";
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
         background: radial-gradient(circle, transparent 25%, #f8fafc 70%);
         z-index: -1;
         pointer-events: none;
         background-color: rgba(255, 102, 0, 0.1);
-        -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/signature/default/24px.svg");
+        -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/signature/default/48px.svg");
         mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/signature/default/48px.svg");
         --icon-size: 45px;
         -webkit-mask-size: var(--icon-size) var(--icon-size);
@@ -83,17 +77,13 @@
       h2 {
         color: var(--naranja);
         text-align: center;
-        margin-bottom: 25px;
         font-weight: 900;
         font-size: 32px;
         margin-top: 0;
         text-wrap: balance;
         display: block;
-        justify-content: center;
         align-items: center;
-        gap: 0;
         line-height: 1;
-        /* PROPIEDADES PARA FIJARLO */
         padding: 35px 0 20px;
         position: sticky;
         top: 0;
@@ -129,6 +119,11 @@
         font-size: 18px;
         text-wrap: balance;
       }
+      input::placeholder {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
       input {
         width: 100%;
         padding: 12px;
@@ -137,9 +132,8 @@
         box-sizing: border-box;
         font-size: 16px;
         font-family: "Outfit", sans-serif;
-        transition:
-          border-color var(--transition-normal),
-          box-shadow var(--transition-normal);
+        transition: all var(--transition-normal);
+        text-overflow: ellipsis;
       }
       input:not(:placeholder-shown) {
         padding-right: 30px;
@@ -162,11 +156,10 @@
         background: #e9ecef;
         padding: 20px;
         border-radius: 6px;
-        overflow-x: auto; /* Permite scroll si la pantalla es muy chica */
+        overflow-x: auto;
         box-sizing: border-box;
         width: 100%;
       }
-
       #signature-box {
         width: 650px;
         min-width: 650px;
@@ -183,7 +176,6 @@
         padding: 25px;
         justify-content: center;
       }
-
       .content-wrapper {
         display: flex;
         flex-direction: column;
@@ -212,7 +204,6 @@
         justify-content: center;
         gap: 6px;
       }
-
       .vertical-line {
         grid-column: 2;
         grid-row: 2;
@@ -223,7 +214,6 @@
         box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
         margin-left: 2px;
       }
-
       .text-container {
         display: flex;
         flex-direction: column;
@@ -316,23 +306,19 @@
         font-size: 15px;
         user-select: none;
       }
-
       .input-container .input-wrapper:focus-within {
         border-color: var(--naranja);
       }
-
       .corner-decor {
         position: absolute;
         width: 180px;
         height: 180px;
         z-index: 0;
       }
-
       .corner-top-left {
         top: 0;
         left: 0;
       }
-
       .corner-bottom-right {
         bottom: 0;
         right: 0;
@@ -351,6 +337,7 @@
       }
       .shape {
         position: relative;
+        aspect-ratio: 1 / 1;
         transform: rotate(45deg);
         border-radius: 15px;
         flex-shrink: 0;
@@ -359,14 +346,12 @@
       }
       .shape-dark {
         width: 155px;
-        aspect-ratio: 1 / 1;
         background: linear-gradient(135deg, #1a1c20 0%, #000000 100%);
         z-index: 3;
         --opacidad: 0.3;
       }
       .shape-orange {
         width: 110px;
-        aspect-ratio: 1 / 1;
         background: linear-gradient(135deg, #ff8c00 0%, #ff4500 100%);
         z-index: 2;
         margin-left: calc(-101px + var(--gap));
@@ -374,7 +359,6 @@
       }
       .shape-grey {
         width: 70px;
-        aspect-ratio: 1 / 1;
         background: linear-gradient(135deg, #e0e0e0 0%, #9e9e9e 100%);
         margin-left: calc(-62px + var(--gap));
         z-index: 1;
@@ -389,13 +373,11 @@
         align-items: center;
         column-gap: var(--grid-gap);
       }
-
       .input-wrapper {
         position: relative;
         display: flex;
         align-items: center;
       }
-
       .clear-btn {
         position: absolute;
         right: 12px;
@@ -409,11 +391,9 @@
         width: 12px;
         transition: all var(--transition-normal);
       }
-
       .clear-btn:hover {
         color: var(--naranja);
       }
-
       input:not(:placeholder-shown) + .clear-btn {
         display: block;
       }
@@ -433,29 +413,23 @@
         will-change: transform;
         line-height: 1;
       }
-
       .btn-clear-all:hover {
         background-color: #d0d0d0;
         color: var(--negro);
       }
-
       .label-cargo {
         display: flex;
         align-items: center;
         gap: 12px;
         cursor: pointer;
         font-size: 16px;
-        color: var(--gris);
-        font-weight: 600;
         user-select: none;
         margin: 0;
       }
-
       #group-cargo label,
       .texto-label {
         opacity: 0.75;
       }
-
       .checkbox-wrapper {
         position: relative;
         width: 18px;
@@ -463,7 +437,6 @@
         flex-shrink: 0;
         align-items: center;
       }
-
       .checkbox-wrapper input {
         position: absolute;
         opacity: 0;
@@ -471,7 +444,6 @@
         height: 0;
         width: 0;
       }
-
       .checkbox-custom {
         position: absolute;
         top: 0;
@@ -486,16 +458,13 @@
         align-items: center;
         justify-content: center;
       }
-
       .label-cargo:hover input ~ .checkbox-custom {
         border-color: var(--naranja);
       }
-
       .checkbox-wrapper input:checked ~ .checkbox-custom {
         background-color: var(--naranja);
         border-color: var(--naranja);
       }
-
       .checkbox-custom:after {
         content: "";
         display: none;
@@ -506,14 +475,9 @@
         transform: rotate(45deg);
         margin-top: -2px;
       }
-
       .checkbox-wrapper input:checked ~ .checkbox-custom:after {
         display: block;
       }
-      .input-auto-width {
-        width: auto;
-      }
-
       #out-cargo {
         font-size: 18px;
         color: var(--naranja);
@@ -522,7 +486,6 @@
         line-height: 1;
         transform-origin: left center;
       }
-
       .full-width {
         width: 100%;
       }
@@ -537,7 +500,6 @@
         text-overflow: ellipsis;
         display: block;
       }
-
       #group-cargo {
         display: block !important;
         max-height: 0;
@@ -549,13 +511,11 @@
           opacity var(--transition-normal),
           margin-bottom var(--transition-normal);
       }
-
       #group-cargo.show {
         max-height: 200px;
         opacity: 1;
         margin-bottom: 20px;
       }
-
       .hidden {
         display: none;
       }
@@ -564,7 +524,6 @@
   <body>
     <div class="card">
       <h2>Generador de firmas EDUMIN</h2>
-
       <div class="form-group">
         <label>Nombre de la persona o del área:</label>
         <div class="input-wrapper">
@@ -572,7 +531,6 @@
           <span class="clear-btn" onclick="clearInput('in-name')">&times;</span>
         </div>
       </div>
-
       <div class="form-group" id="container-cargo">
         <label class="label-cargo">
           <div class="checkbox-wrapper">
@@ -582,7 +540,6 @@
           <span class="texto-label">Añadir puesto o descripción</span>
         </label>
       </div>
-
       <div id="group-cargo" class="form-group hidden">
         <label>Puesto o descripción:</label>
         <div class="input-wrapper">
@@ -600,7 +557,6 @@
           </div>
         </div>
       </div>
-
       <div class="form-group">
         <label>Correo electrónico:</label>
         <div class="input-wrapper">
@@ -608,7 +564,6 @@
           <span class="clear-btn" onclick="clearInput('in-email')">&times;</span>
         </div>
       </div>
-
       <div id="signature-container">
         <div id="signature-box">
           <div class="content-wrapper">
@@ -616,14 +571,11 @@
               <div class="name-area" id="out-name">Nombre o área</div>
               <div id="out-cargo" class="hidden">Cargo o descripción</div>
             </div>
-
             <div class="main-layout">
               <div class="logo-section">
                 <img src="https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/master/logo%20negro%20edumin.png" crossorigin="anonymous" alt="Logo" />
               </div>
-
               <div class="vertical-line"></div>
-
               <div class="info-section">
                 <div class="contact-item">
                   <div class="icon-circle"><span class="material-symbols-outlined">call</span></div>
@@ -647,7 +599,6 @@
               <div class="shape shape-grey"></div>
             </div>
           </div>
-
           <div class="corner-decor corner-bottom-right">
             <div class="shapes-group">
               <div class="shape shape-dark"></div>
@@ -657,66 +608,49 @@
           </div>
         </div>
       </div>
-
       <button class="btn-download" onclick="download(event)">Descargar firma</button>
       <button class="btn-clear-all" onclick="clearAllFields()">Limpiar datos</button>
     </div>
-
     <script>
       function formatPhone(input) {
         let val = input.value.replace(/\D/g, "");
-
         if (val.startsWith("51")) val = val.substring(2);
-
         let formatted = val.match(/.{1,3}/g);
         input.value = formatted ? formatted.join(" ") : "";
-
         update();
       }
-
       function update() {
         const nameElement = document.getElementById("out-name");
         const nameInput = document.getElementById("in-name").value;
         const cargoElement = document.getElementById("out-cargo");
         const cargoInput = document.getElementById("in-cargo").value;
         const isCargoActive = document.getElementById("check-cargo").checked;
-
         nameElement.innerText = nameInput || "Nombre o área";
         if (isCargoActive) {
           cargoElement.innerText = cargoInput || "Puesto o descripción";
         }
-
         nameElement.style.transform = "scaleX(1)";
         cargoElement.style.transform = "scaleX(1)";
-
-        const MAX_WIDTH = 420; // El ancho límite que definiste
-
+        const MAX_WIDTH = 420;
         const realWidthName = nameElement.scrollWidth;
         const scaleName = realWidthName > MAX_WIDTH ? MAX_WIDTH / realWidthName : 1;
-
         let scaleCargo = 1;
         if (isCargoActive) {
           const realWidthCargo = cargoElement.scrollWidth;
           scaleCargo = realWidthCargo > MAX_WIDTH ? MAX_WIDTH / realWidthCargo : 1;
         }
-
         const finalScale = Math.min(scaleName, scaleCargo);
-
         nameElement.style.transform = `scaleX(${finalScale})`;
         nameElement.style.transformOrigin = "left center";
-
         if (isCargoActive) {
           cargoElement.style.transform = `scaleX(${finalScale})`;
           cargoElement.style.transformOrigin = "left center";
         }
-
         const phoneVal = document.getElementById("in-phone").value;
         document.getElementById("out-phone").innerText = phoneVal ? "+51 " + phoneVal : "+51 999 999 999";
-
         const emailElement = document.getElementById("out-email");
         emailElement.innerText = document.getElementById("in-email").value || "correoelectronico@edumin.pe";
         emailElement.style.transform = "scaleX(1)";
-
         const MAX_EMAIL_WIDTH = 295;
         const realEmailWidth = emailElement.scrollWidth;
         if (realEmailWidth > MAX_EMAIL_WIDTH) {
@@ -724,39 +658,28 @@
           emailElement.style.transform = `scaleX(${emailScaleFactor})`;
         }
       }
-
       function download(event) {
         const nameInput = document.getElementById("in-name").value.trim();
         const phoneInput = document.getElementById("in-phone").value.trim();
         const emailInput = document.getElementById("in-email").value.trim();
         const cargoInput = document.getElementById("in-cargo").value.trim();
         const isCargoChecked = document.getElementById("check-cargo").checked;
-
-        // Shortcut: Si presionas Ctrl + Shift al hacer clic, descarga sin validar
         const isShortcut = event && event.ctrlKey && event.shiftKey;
-
         if (!isShortcut) {
-          // Validación de campos básicos
           if (!nameInput || !phoneInput || !emailInput) {
-            alert("Por favor, completa todos los campos (Nombre, Teléfono y Email) antes de descargar.");
+            alert("Completa todos los campos solicitados antes de descargar tu firma.");
             return;
           }
-
-          // Validación de cargo si el checkbox está activo
           if (isCargoChecked && !cargoInput) {
-            alert("Has marcado la opción de puesto/descripción, por favor rellena el campo o desactiva la casilla.");
+            alert("Completa todos los campos solicitados antes de descargar tu firma.");
             return;
           }
         }
-
-        // --- Proceso de descarga original ---
         const box = document.getElementById("signature-box");
         const fileName = nameInput ? `Firma - ${nameInput}.png` : "Firma - EDUMIN.png";
         const btn = document.querySelector(".btn-download");
-
         btn.innerText = "Procesando…";
         btn.disabled = true;
-
         setTimeout(() => {
           htmlToImage
             .toPng(box, {
@@ -769,7 +692,6 @@
               link.download = fileName;
               link.href = dataUrl;
               link.click();
-
               btn.innerText = "Descargar firma";
               btn.disabled = false;
             })
@@ -786,7 +708,6 @@
         input.focus();
         update();
       }
-
       function validateEmailInput(input) {
         input.value = input.value.toLowerCase().replace(/\s+/g, "");
         update();
@@ -803,7 +724,6 @@
         const isChecked = document.getElementById("check-cargo").checked;
         const groupCargo = document.getElementById("group-cargo");
         const outCargo = document.getElementById("out-cargo");
-
         if (isChecked) {
           groupCargo.classList.add("show");
           outCargo.classList.remove("hidden");
