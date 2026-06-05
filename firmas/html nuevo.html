@@ -1,0 +1,2050 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='%236366f1' viewBox='0 0 256 256'><path d='M168,96a72,72,0,0,1-72,72,73.37,73.37,0,0,1-7.6-.4A73.37,73.37,0,0,1,88,160a72,72,0,0,1,72-72,73.37,73.37,0,0,1,7.6.4A73.37,73.37,0,0,1,168,96Z' opacity='0.2'></path><path d='M174.63,81.37a80,80,0,1,0-93.26,93.26,80,80,0,1,0,93.26-93.26ZM32,96a64,64,0,0,1,126-16A80.08,80.08,0,0,0,80.05,158,64.11,64.11,0,0,1,32,96Zm128,0a64.07,64.07,0,0,1-64,64A64.07,64.07,0,0,1,160,96Zm0,128A64.11,64.11,0,0,1,98,176,80.08,80.08,0,0,0,176,98,64,64,0,0,1,160,224Z'></path></svg>" />
+    <script>
+      const temaGuardado = localStorage.getItem("tema-preferido") || "dark";
+      document.documentElement.setAttribute("data-theme", temaGuardado);
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>HTML a PNG/PDF</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+      [data-theme="dark"] {
+        --color-primario: #6366f1;
+        --color-primario-hover: #4f46e5;
+        --fondo-principal: #111827;
+        --fondo-tarjeta: #1e293b;
+        --texto-principal: #f8fafc;
+        --texto-secundario: #94a3b8;
+        --borde: 1px solid rgb(255 255 255 / 20%);
+        --transicion-suave: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --transparencia: rgb(0 0 0 / 20%);
+        --hover-transparente: rgb(99 102 241 / 15%);
+        --scroll: 255 255 255;
+        --color-descarga: var(--texto-principal);
+        --sombra-desplegables: 0 0 5px rgb(var(--scroll) / 25%);
+        --opacidad-sombra: 14%;
+      }
+
+      [data-theme="light"] {
+        --color-primario: #6366f1;
+        --color-primario-hover: #4f46e5;
+        --fondo-principal: #f1f5f9;
+        --fondo-tarjeta: #f8fafc;
+        --texto-principal: #1e293b;
+        --texto-secundario: #64748b;
+        --borde: 1px solid rgb(0 0 0 / 20%);
+        --transicion-suave: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --transparencia: rgb(0 0 0 / 2.5%);
+        --hover-transparente: rgb(99 102 241 / 15%);
+        --scroll: 0 0 0;
+        --color-descarga: var(--fondo-tarjeta);
+        --sombra-desplegables: 0 0 5px rgb(var(--scroll) / 15%);
+        --opacidad-sombra: 24%;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+
+      body {
+        background-color: var(--fondo-principal);
+        color: var(--texto-principal);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .encabezado {
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--fondo-tarjeta);
+        border-bottom: var(--borde);
+        z-index: 100;
+      }
+
+      .logotipo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-weight: 800;
+        font-size: 22px;
+        transition: var(--transicion-suave);
+        cursor: pointer;
+      }
+
+      .logotipo i {
+        color: var(--color-primario);
+        font-size: 28px;
+      }
+
+      .acciones-encabezado {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .contenedor-principal {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        flex-grow: 1;
+        overflow: hidden;
+      }
+
+      .barra-lateral {
+        background: var(--fondo-tarjeta);
+        border-right: var(--borde);
+        display: flex;
+        flex-direction: column;
+        z-index: 10;
+        overflow: hidden;
+      }
+
+      .contenido-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .contenedor-boton {
+        padding: 20px 30px;
+        background: var(--fondo-tarjeta);
+        border-top: var(--borde);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .contenedor-selector-descarga {
+        position: relative;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .titulo-seccion {
+        font-size: 14px;
+        text-transform: uppercase;
+        color: var(--color-primario);
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .nombre-archivo {
+        font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        transition: var(--transicion-suave);
+      }
+
+      .subida-archivo {
+        border: var(--borde);
+        border-style: dashed;
+        border-width: 2px;
+        color: var(--texto-secundario);
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transicion-suave);
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        background: var(--transparencia);
+        font-weight: 500;
+      }
+
+      .subida-archivo.arrastrando {
+        border-color: var(--color-primario) !important;
+        background: var(--hover-transparente) !important;
+      }
+
+      .subida-archivo:hover {
+        border-color: var(--color-primario);
+        background: var(--hover-transparente);
+      }
+
+      .subida-archivo.error-archivo {
+        color: #f43f5e !important;
+        cursor: not-allowed;
+      }
+
+      .subida-archivo i {
+        font-size: 32px;
+        color: var(--texto-secundario);
+        transition: var(--transicion-suave);
+      }
+
+      .archivo-cargado .subida-archivo {
+        color: var(--texto-principal);
+        border-color: var(--color-primario);
+      }
+
+      .mensaje-vacio i,
+      .mensaje-error-icono {
+        font-size: 40px;
+      }
+
+      .mensaje-error-icono,
+      .mensaje-error-texto p {
+        color: #f43f5e;
+      }
+
+      .btn-tema i,
+      .btn-encabezado-vista i,
+      .icono-boton,
+      .contenido-boton i {
+        font-size: 20px;
+      }
+
+      .opcion-vista i,
+      .opcion-descarga i {
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+
+      .btn-navegacion i {
+        font-size: 20px;
+        color: var(--color-descarga);
+      }
+
+      .archivo-cargado .subida-archivo i {
+        color: var(--texto-principal);
+      }
+
+      .caja-info {
+        background: var(--transparencia);
+        padding: 15px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        border: var(--borde);
+        transition: var(--transicion-suave);
+        font-weight: 500;
+        cursor: not-allowed;
+      }
+
+      .archivo-cargado .caja-info {
+        cursor: default;
+      }
+
+      .fila-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+      }
+
+      .etiqueta-info {
+        color: var(--texto-secundario);
+        transition: var(--transicion-suave);
+      }
+
+      .archivo-cargado .etiqueta-info {
+        color: var(--texto-principal);
+      }
+
+      .valor-info {
+        font-size: 11px;
+      }
+
+      .grupo-botones {
+        display: flex;
+        width: 100%;
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: var(--transicion-suave);
+        background: var(--color-primario);
+        align-items: stretch;
+      }
+
+      .boton-descargar {
+        position: relative;
+        background: var(--color-primario);
+        color: var(--color-descarga);
+        border: none;
+        padding: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: var(--transicion-suave);
+        font-size: 12px;
+        flex-grow: 1;
+        border-radius: 0;
+      }
+
+      .flecha-descargar {
+        background: var(--color-primario);
+        color: var(--color-descarga);
+        border: none;
+        padding: 0 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transicion-suave);
+        font-size: 14px;
+        position: relative;
+      }
+
+      .separador-borde {
+        width: 1px;
+        align-self: stretch;
+        background-color: rgb(255 255 255 / 20%);
+        flex-shrink: 0;
+        z-index: 5;
+      }
+
+      .grupo-botones:has(.flecha-restringida) .separador-borde {
+        display: none !important;
+      }
+
+      .flecha-descargar.flecha-restringida {
+        display: none !important;
+      }
+
+      .boton-descargar:hover:not(:disabled),
+      .flecha-descargar:hover:not(:disabled, .flecha-restringida) {
+        background: var(--color-primario-hover);
+      }
+
+      .grupo-botones.deshabilitado {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .sin-transicion {
+        transition: none !important;
+      }
+
+      .sin-transicion * {
+        transition: none !important;
+      }
+
+      .grupo-botones.deshabilitado * {
+        cursor: not-allowed !important;
+        pointer-events: none;
+      }
+
+      .grupo-botones.deshabilitado.exito,
+      .grupo-botones.deshabilitado.error {
+        opacity: 1;
+      }
+
+      .texto-boton {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: var(--transicion-suave);
+        line-height: 1.1;
+      }
+
+      .grupo-botones.exito,
+      .grupo-botones.exito .boton-descargar,
+      .grupo-botones.exito .flecha-descargar {
+        background-color: #10b981 !important;
+        color: #fff !important;
+      }
+
+      .grupo-botones.error,
+      .grupo-botones.error .boton-descargar,
+      .grupo-botones.error .flecha-descargar {
+        background-color: #f43f5e !important;
+        color: #fff !important;
+      }
+
+      .contenido-boton {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+        transition: var(--transicion-suave);
+        height: 100%;
+      }
+
+      .boton-cargando .contenido-boton {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .menu-desplegable-descarga {
+        position: absolute;
+        bottom: calc(100% + 8px);
+        right: 0;
+        left: 0;
+        background: var(--fondo-tarjeta);
+        border: var(--borde);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: var(--sombra-desplegables);
+        opacity: 0;
+        transform: translateY(8px);
+        pointer-events: none;
+        transition: var(--transicion-suave);
+        z-index: 200;
+        overflow: hidden;
+      }
+
+      .grupo-botones.abierto + .menu-desplegable-descarga {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .opcion-descarga {
+        background: var(--transparencia);
+        border: none;
+        color: var(--texto-principal);
+        padding: 15px;
+        font-size: 12px;
+        font-weight: 500;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: var(--transicion-suave);
+        width: 100%;
+        line-height: 1.1;
+      }
+
+      .area-visualizacion {
+        background-color: var(--fondo-principal);
+        position: relative;
+        overflow: hidden;
+        padding: 0; /* Quitamos el padding de aquí para que el scroll aproveche todo el espacio */
+        height: 100%;
+      }
+
+      .contenedor-scroll-interno {
+        width: 100%;
+        height: 100%;
+        overflow: auto; /* El scroll ahora pertenece única y exclusivamente a este div */
+        padding: 40px; /* El padding que antes tenía el padre se lo damos al contenido con scroll */
+      }
+
+      .area-visualizacion:has(.contenedor-captura.visible) {
+        overflow: hidden;
+      }
+
+      .espaciador-virtual {
+        position: relative;
+        display: block;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+      }
+
+      .contenedor-captura {
+        display: none;
+        opacity: 0;
+        position: absolute;
+        box-shadow:
+          0 calc(2px / var(--escala, 1)) calc(8px / var(--escala, 1)) rgb(var(--scroll) / calc(var(--opacidad-sombra) / 2)),
+          0 calc(10px / var(--escala, 1)) calc(32px / var(--escala, 1)) rgb(var(--scroll) / var(--opacidad-sombra));
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 16 16"><rect width="8" height="8" fill="%23e0e0e0"/><rect x="8" y="8" width="8" height="8" fill="%23e0e0e0"/><rect x="8" width="8" height="8" fill="%23ffffff"/><rect y="8" width="8" height="8" fill="%23ffffff"/></svg>');
+        background-repeat: repeat;
+        line-height: 0;
+        flex-shrink: 0;
+        transform-origin: top left;
+        pointer-events: auto;
+        transition:
+          opacity 0.1s ease-in-out,
+          transform 0.1s ease-in-out,
+          left 0.1s ease-in-out,
+          top 0.1s ease-in-out,
+          width 0.1s ease-in-out,
+          height 0.1s ease-in-out !important;
+      }
+
+      .contenedor-captura.visible {
+        opacity: 1 !important;
+      }
+
+      .marco-previsualizacion {
+        border: none;
+        display: block;
+      }
+
+      .mensaje-vacio {
+        color: var(--texto-secundario);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        transition: var(--transicion-suave);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        padding: 20px;
+      }
+
+      .mensaje-vacio.oculto {
+        display: none !important;
+      }
+
+      .mensaje-vacio p {
+        font-size: 14px;
+        text-wrap: balance;
+        font-weight: 500;
+      }
+
+      .cargador {
+        display: none;
+        font-size: 20px;
+        color: var(--texto-principal);
+        animation: giro 0.8s linear infinite;
+        opacity: 0;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        translate: -50% -50%;
+        transition: var(--transicion-suave);
+      }
+
+      .boton-cargando .cargador {
+        opacity: 1;
+      }
+
+      .grupo-botones.boton-cargando .cargador {
+        display: block;
+        opacity: 1;
+      }
+
+      @keyframes giro {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      ::-webkit-scrollbar {
+        --barra-scroll: 0.8vw;
+
+        width: var(--barra-scroll);
+        height: var(--barra-scroll);
+      }
+
+      ::-webkit-scrollbar-track,
+      ::-webkit-scrollbar-corner {
+        background-color: rgb(var(--scroll) / 8%);
+      }
+
+      .menu-opciones-capas::-webkit-scrollbar {
+        --barra-capas: 0.4vw;
+
+        width: var(--barra-capas);
+        height: var(--barra-capas);
+      }
+
+      .menu-opciones-capas::-webkit-scrollbar-thumb {
+        border: 0.15vw solid transparent;
+      }
+
+      .menu-opciones-capas::-webkit-scrollbar-track {
+        margin: 8px;
+        background-color: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgb(var(--scroll) / 20%);
+        border-radius: 100px;
+        border: 0.25vw solid transparent;
+        background-clip: content-box;
+        transition: var(--transicion-suave);
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--texto-secundario);
+        background-clip: content-box;
+      }
+
+      .boton-calidad {
+        width: 100%;
+        padding: 15px;
+        background: var(--transparencia);
+        border: var(--borde);
+        border-radius: 10px;
+        color: var(--texto-secundario);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: var(--transicion-suave);
+        font-size: 12px;
+        line-height: 1.25;
+        position: relative;
+        font-weight: 500;
+      }
+
+      .boton-calidad:disabled {
+        cursor: not-allowed;
+        pointer-events: auto;
+      }
+
+      .boton-calidad:not(:disabled) {
+        cursor: pointer;
+        color: var(--texto-principal);
+      }
+
+      .archivo-cargado .boton-calidad {
+        color: var(--texto-principal);
+        pointer-events: auto;
+      }
+
+      .boton-calidad:not(:disabled):hover {
+        border-color: var(--color-primario);
+        background: var(--hover-transparente);
+      }
+
+      .escala {
+        background: var(--transparencia);
+        border-radius: 80px;
+        padding: 5px 0;
+        display: flex;
+        align-items: center;
+        transition: var(--transicion-suave);
+        width: 40px;
+        justify-content: center;
+        position: absolute;
+        transform: translateY(-50%);
+        top: 50%;
+        right: 15px;
+        font-size: 11px;
+      }
+
+      .cargador-archivo {
+        display: none;
+        opacity: 0;
+        transition: var(--transicion-suave);
+        font-size: 40px;
+        color: var(--texto-secundario);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+      }
+
+      .cargador-archivo.activo {
+        display: block;
+        opacity: 1;
+      }
+
+      .btn-tema {
+        background: var(--transparencia);
+        border: var(--borde);
+        color: var(--texto-principal);
+        padding: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transicion-suave);
+      }
+
+      .contenedor-desplegable-vista {
+        position: relative;
+        display: inline-block;
+      }
+
+      .btn-encabezado-vista {
+        background: var(--transparencia);
+        border: var(--borde);
+        color: var(--texto-principal);
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: var(--transicion-suave);
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 10px 15px;
+        width: 175px;
+      }
+
+      .btn-encabezado-vista .grupo-texto {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        line-height: 1.1;
+      }
+
+      .btn-encabezado-vista:disabled {
+        cursor: not-allowed;
+        color: var(--texto-secundario);
+      }
+
+      .btn-encabezado-vista:hover:not(:disabled),
+      .btn-tema:hover {
+        border-color: var(--color-primario);
+        background: var(--hover-transparente);
+      }
+
+      .btn-encabezado-vista .flecha-menu {
+        font-size: 14px;
+        color: var(--texto-secundario);
+        transition: var(--transicion-suave);
+        flex-shrink: 0;
+      }
+
+      .menu-opciones-vista {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        background: var(--fondo-tarjeta);
+        border: var(--borde);
+        border-radius: 10px;
+        width: 175px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: var(--sombra-desplegables);
+        opacity: 0;
+        transform: translateY(-8px);
+        pointer-events: none;
+        transition: var(--transicion-suave);
+        z-index: 200;
+        overflow: hidden;
+      }
+
+      .contenedor-desplegable-vista.abierto .menu-opciones-vista {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .opcion-vista {
+        background: var(--transparencia);
+        border: none;
+        color: var(--texto-principal);
+        padding: 10px 15px;
+        font-size: 12px;
+        font-weight: 500;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: var(--transicion-suave);
+        width: 100%;
+        line-height: 1.1;
+      }
+
+      .cursor-animado {
+        color: var(--color-primario);
+        animation: parpadeo 1s step-end infinite;
+      }
+
+      .contenedor-desplegable-capas {
+        position: relative;
+        width: 100%;
+      }
+
+      .btn-capas-activo {
+        width: 100%;
+        padding: 15px;
+        background-color: var(--transparencia);
+        border: var(--borde);
+        border-radius: 10px;
+        color: var(--texto-secundario);
+        font-family: inherit;
+        font-size: 12px;
+        outline: none;
+        cursor: not-allowed;
+        transition: var(--transicion-suave);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 500;
+        gap: 8px;
+      }
+
+      .archivo-cargado .btn-capas-activo {
+        color: var(--texto-principal);
+        cursor: pointer;
+      }
+
+      .archivo-cargado .btn-capas-activo:hover {
+        border-color: var(--color-primario);
+        background: var(--hover-transparente);
+      }
+
+      .btn-capas-activo .grupo-texto {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .btn-capas-activo .flecha-menu {
+        font-size: 14px;
+        color: var(--texto-secundario);
+        transition: var(--transicion-suave);
+        flex-shrink: 0;
+      }
+
+      .menu-opciones-capas {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        right: 0;
+        background: var(--fondo-tarjeta);
+        border: var(--borde);
+        border-radius: 10px;
+        display: block;
+        box-shadow: var(--sombra-desplegables);
+        opacity: 0;
+        transform: translateY(-8px);
+        pointer-events: none;
+        transition: var(--transicion-suave);
+        z-index: 210;
+        max-height: 240px;
+        overflow-y: auto;
+      }
+
+      .contenedor-desplegable-capas.abierto .menu-opciones-capas {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .opcion-capa {
+        background: var(--transparencia);
+        border: none;
+        color: var(--texto-principal);
+        padding: 10px 15px;
+        font-size: 12px;
+        font-weight: 500;
+        text-align: left;
+        cursor: pointer;
+        transition: var(--transicion-suave);
+        width: 100%;
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .opcion-capa:hover,
+      .opcion-descarga:hover,
+      .opcion-vista:hover {
+        background: var(--hover-transparente);
+      }
+
+      .menu-opciones-capas.tiene-scroll .opcion-capa {
+        border-right: var(--borde);
+      }
+
+      .opcion-capa.seleccionada,
+      .opcion-vista.seleccionada {
+        background: var(--color-primario);
+        color: var(--color-descarga) !important;
+      }
+
+      .iframe-impresion-oculto {
+        position: fixed;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      .btn-navegacion {
+        display: none;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--color-primario);
+        padding: 10px;
+        border-radius: 50%;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transicion-suave);
+        z-index: 150;
+        box-shadow: var(--sombra-desplegables);
+        border: none;
+      }
+
+      .btn-navegacion.habilitada {
+        display: flex;
+      }
+
+      .btn-navegacion:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-navegacion:not(:disabled):hover {
+        background: var(--color-primario-hover);
+      }
+
+      .nav-izq {
+        display: none;
+        left: 20px;
+      }
+
+      .nav-der {
+        display: none;
+        right: 20px;
+      }
+
+      /* AÑADIR AL FINAL DE TU \3c style> */
+      .sin-transicion #contenedor-captura {
+        transition: none !important;
+      }
+
+      @keyframes parpadeo {
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="encabezado">
+      <div class="logotipo" onclick="window.location.reload()">
+        <i class="ph-duotone ph-intersect"></i>
+        <span>HTML a PNG/PDF<span class="cursor-animado">_</span></span>
+      </div>
+
+      <div class="acciones-encabezado">
+        <div class="contenedor-desplegable-vista" id="contenedor-desplegable">
+          <button class="btn-encabezado-vista" id="btn-vista-activo" title="Modo de ajuste de vista" disabled>
+            <div class="grupo-texto">
+              <i class="ph-duotone ph-frame-corners" id="icono-vista-activo"></i>
+              <span id="texto-vista-activo">Tamaño real</span>
+            </div>
+            <i class="ph-duotone ph-caret-down flecha-menu"></i>
+          </button>
+
+          <div class="menu-opciones-vista" id="menu-vistas">
+            <button class="opcion-vista" data-idx="0"><i class="ph-duotone ph-frame-corners"></i>Tamaño real</button>
+            <button class="opcion-vista" data-idx="1"><i class="ph-duotone ph-arrows-out-line-horizontal"></i>Ajustar al ancho</button>
+            <button class="opcion-vista" data-idx="2"><i class="ph-duotone ph-arrows-out-line-vertical"></i>Ajustar al alto</button>
+            <button class="opcion-vista" data-idx="3"><i class="ph-duotone ph-arrows-out"></i>Encajar todo</button>
+          </div>
+        </div>
+
+        <button class="btn-tema" id="toggle-tema" title="Cambiar tema claro/oscuro">
+          <i id="icono-tema"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="contenedor-principal">
+      <div class="barra-lateral" id="panel-control">
+        <div class="contenido-scroll">
+          <div>
+            <p class="titulo-seccion">1. Archivo:</p>
+            <label for="entrada-html" class="subida-archivo" id="zona-arrastre">
+              <i class="ph-duotone ph-file-code"></i>
+              <span id="nombre-archivo" class="nombre-archivo">Selecciona un archivo HTML</span>
+              <input type="file" id="entrada-html" accept=".html,.htm" hidden />
+            </label>
+          </div>
+
+          <div>
+            <p class="titulo-seccion">2. Elemento a Exportar:</p>
+            <div class="contenedor-desplegable-capas" id="contenedor-desplegable-capas">
+              <button class="btn-capas-activo" id="btn-capas-activo" title="Seleccionar elemento a exportar" disabled>
+                <div class="grupo-texto">
+                  <span id="texto-capa-activo">Esperando archivo…</span>
+                </div>
+                <i class="ph-duotone ph-caret-down flecha-menu"></i>
+              </button>
+              <div class="menu-opciones-capas" id="menu-capas"></div>
+            </div>
+          </div>
+
+          <div>
+            <p class="titulo-seccion">3. Dimensiones Reales:</p>
+            <div class="caja-info">
+              <div class="fila-info">
+                <span class="etiqueta-info">Ancho:</span>
+                <span class="valor-info" id="info-ancho">--</span>
+              </div>
+              <div class="fila-info">
+                <span class="etiqueta-info">Alto:</span>
+                <span class="valor-info" id="info-alto">--</span>
+              </div>
+              <div class="fila-info">
+                <span class="etiqueta-info">Exportación:</span>
+                <span class="valor-info" id="info-exportacion">--</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p class="titulo-seccion">4. Resolución de imagen:</p>
+            <button id="selector-calidad" class="boton-calidad" disabled>
+              <span>Escala:</span>
+              <span class="escala">×<span id="valor-ratio">1</span></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="contenedor-boton">
+          <div class="contenedor-selector-descarga">
+            <div class="grupo-botones deshabilitado" id="grupo-descarga">
+              <button id="boton-descarga" class="boton-descargar">
+                <div id="contenido-boton" class="contenido-boton">
+                  <i id="icono-boton" class="ph-duotone ph-image-square icono-boton"></i>
+                  <span id="texto-boton" class="texto-boton">Descargar imagen</span>
+                </div>
+                <i class="ph-duotone ph-circle-notch cargador" id="cargador"></i>
+              </button>
+
+              <span class="separador-borde"></span>
+
+              <button id="boton-descarga-flecha" class="flecha-descargar flecha-restringida" title="Opciones de descarga">
+                <i class="ph-duotone ph-caret-up"></i>
+              </button>
+            </div>
+
+            <div class="menu-desplegable-descarga" id="dropdown-descarga"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="area-visualizacion" id="area-visualizacion">
+        <button id="btn-nav-izq" class="btn-navegacion nav-izq" title="Elemento anterior">
+          <i class="ph-duotone ph-caret-left"></i>
+        </button>
+
+        <button id="btn-nav-der" class="btn-navegacion nav-der" title="Elemento posterior">
+          <i class="ph-duotone ph-caret-right"></i>
+        </button>
+
+        <i class="ph-duotone ph-circle-notch cargador cargador-archivo" id="cargador-archivo"></i>
+        <div id="vacio" class="mensaje-vacio">
+          <i class="ph-duotone ph-binoculars"></i>
+          <p>Selecciona un archivo para visualizarlo…</p>
+        </div>
+
+        <div class="contenedor-scroll-interno">
+          <div class="espaciador-virtual" id="espaciador">
+            <div id="contenedor-captura" class="contenedor-captura">
+              <iframe id="marco-previsualizacion" class="marco-previsualizacion" scrolling="no"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const btnTema = document.getElementById("toggle-tema");
+      const iconoTema = document.getElementById("icono-tema");
+      const cuerpo = document.body;
+
+      const temaActual = document.documentElement.getAttribute("data-theme") || "light";
+
+      iconoTema.className = temaActual === "dark" ? "ph-duotone ph-sun" : "ph-duotone ph-moon";
+
+      btnTema.addEventListener("click", () => {
+        const esOscuro = document.documentElement.getAttribute("data-theme") === "dark";
+        const nuevoTema = esOscuro ? "light" : "dark";
+
+        document.documentElement.setAttribute("data-theme", nuevoTema);
+        iconoTema.className = nuevoTema === "dark" ? "ph-duotone ph-sun" : "ph-duotone ph-moon";
+        localStorage.setItem("tema-preferido", nuevoTema);
+      });
+
+      const entradaHtml = document.getElementById("entrada-html");
+      const zonaArrastre = document.getElementById("zona-arrastre");
+      const contenedor = document.getElementById("contenedor-captura");
+      const espaciador = document.getElementById("espaciador");
+      let marcoPrevisualizacion = document.getElementById("marco-previsualizacion");
+      const vistaVacia = document.getElementById("vacio");
+
+      const contenedorDesplegableCapas = document.getElementById("contenedor-desplegable-capas");
+      const btnCapasActivo = document.getElementById("btn-capas-activo");
+      const textoCapaActivo = document.getElementById("texto-capa-activo");
+      const menuCapas = document.getElementById("menu-capas");
+
+      const btnNavIzq = document.getElementById("btn-nav-izq");
+      const btnNavDer = document.getElementById("btn-nav-der");
+
+      let indiceSeleccionadoActual = 0;
+
+      const grupoDescarga = document.getElementById("grupo-descarga");
+      const botonDescarga = document.getElementById("boton-descarga");
+      const botonDescargaFlecha = document.getElementById("boton-descarga-flecha");
+      const dropdownDescarga = document.getElementById("dropdown-descarga");
+
+      const infoAncho = document.getElementById("info-ancho");
+      const infoAlto = document.getElementById("info-alto");
+      const infoExport = document.getElementById("info-exportacion");
+      const cargador = document.getElementById("cargador");
+      const areaVisualizacion = document.getElementById("area-visualizacion");
+
+      const contenedorDesplegable = document.getElementById("contenedor-desplegable");
+      const btnVistaActivo = document.getElementById("btn-vista-activo");
+      const textoVistaActivo = document.getElementById("texto-vista-activo");
+      const iconoVistaActivo = document.getElementById("icono-vista-activo");
+      const opcionesVista = document.querySelectorAll(".opcion-vista");
+
+      let elementosActuales = [];
+      let htmlOriginal = "";
+      let esCargaInicial = true; // Nueva bandera de control
+
+      const TEXTO_SUBIDA_ORIGINAL = document.getElementById("nombre-archivo")?.textContent || "";
+      const TEXTO_BOTON_ORIGINAL = document.getElementById("texto-boton")?.textContent || "";
+      const VISTA_POR_DEFECTO = 3;
+      let vistaActual = VISTA_POR_DEFECTO;
+      // === MAPEO DINÁMICO DE MODOS DE VISTA ===
+      // Extraemos el texto y la clase del icono de cada botón de forma automática
+      const MODOS_VISTA = Array.from(opcionesVista).map((boton) => {
+        const iconoElemento = boton.querySelector("i");
+        return {
+          nombre: boton.textContent.trim(),
+          icono: iconoElemento ? iconoElemento.className : "",
+        };
+      });
+
+      textoVistaActivo.textContent = MODOS_VISTA[VISTA_POR_DEFECTO].nombre;
+      iconoVistaActivo.className = MODOS_VISTA[VISTA_POR_DEFECTO].icono;
+      opcionesVista[VISTA_POR_DEFECTO].classList.add("seleccionada");
+
+      btnVistaActivo.addEventListener("click", (e) => {
+        e.stopPropagation();
+        grupoDescarga.classList.remove("abierto");
+        contenedorDesplegableCapas.classList.remove("abierto");
+
+        contenedorDesplegable.classList.toggle("abierto");
+      });
+
+      botonDescargaFlecha.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (!botonDescargaFlecha.classList.contains("flecha-restringida")) {
+          contenedorDesplegable.classList.remove("abierto");
+          contenedorDesplegableCapas.classList.remove("abierto");
+
+          grupoDescarga.classList.toggle("abierto");
+        }
+      });
+
+      btnCapasActivo.addEventListener("click", (e) => {
+        e.stopPropagation();
+        contenedorDesplegable.classList.remove("abierto");
+        grupoDescarga.classList.remove("abierto");
+
+        contenedorDesplegableCapas.classList.toggle("abierto");
+      });
+
+      document.addEventListener("click", () => {
+        if (typeof contenedorDesplegable !== "undefined") contenedorDesplegable.classList.remove("abierto");
+        contenedorDesplegableCapas.classList.remove("abierto");
+        grupoDescarga.classList.remove("abierto");
+      });
+
+      opcionesVista.forEach((boton) => {
+        boton.addEventListener("click", function () {
+          vistaActual = parseInt(this.dataset.idx);
+          opcionesVista.forEach((b) => b.classList.remove("seleccionada"));
+          this.classList.add("seleccionada");
+          textoVistaActivo.textContent = MODOS_VISTA[vistaActual].nombre;
+          iconoVistaActivo.className = MODOS_VISTA[vistaActual].icono;
+          contenedorDesplegable.classList.remove("abierto");
+          areaVisualizacion.classList.add("sin-transicion");
+          aplicarEscalaYScrolls();
+          requestAnimationFrame(() => {
+            areaVisualizacion.classList.remove("sin-transicion");
+          });
+        });
+      });
+
+      const observadorRedimension = new ResizeObserver(() => {
+        if (contenedor.classList.contains("visible")) {
+          aplicarEscalaYScrolls();
+        }
+      });
+      observadorRedimension.observe(areaVisualizacion);
+
+      function resetearInterfaz() {
+        vistaVacia.classList.remove("oculto");
+        contenedor.style.display = "none";
+        contenedor.classList.remove("visible");
+
+        contenedor.style.opacity = "0";
+        contenedor.style.transform = "none";
+
+        // === AÑADE ESTAS LÍNEAS AQUÍ ===
+        contenedor.style.width = "0px";
+        contenedor.style.height = "0px";
+        if (marcoPrevisualizacion) {
+          marcoPrevisualizacion.style.width = "0px";
+          marcoPrevisualizacion.style.height = "0px";
+          // Limpia el contenido interno para que no ocupe espacio
+          try {
+            marcoPrevisualizacion.contentWindow.document.body.innerHTML = "";
+          } catch (e) {}
+        }
+        // ===============================
+
+        btnVistaActivo.disabled = true;
+        contenedorDesplegable.classList.remove("abierto");
+
+        grupoDescarga.classList.add("deshabilitado");
+        botonDescargaFlecha.classList.add("flecha-restringida");
+        grupoDescarga.classList.remove("abierto");
+
+        btnCalidad.disabled = true;
+
+        btnNavIzq.classList.remove("habilitada");
+        btnNavDer.classList.remove("habilitada");
+
+        vistaActual = VISTA_POR_DEFECTO;
+        opcionesVista.forEach((b) => b.classList.remove("seleccionada"));
+        opcionesVista[VISTA_POR_DEFECTO].classList.add("seleccionada");
+        textoVistaActivo.textContent = MODOS_VISTA[VISTA_POR_DEFECTO].nombre;
+        iconoVistaActivo.className = MODOS_VISTA[VISTA_POR_DEFECTO].icono;
+
+        document.getElementById("panel-control").classList.remove("archivo-cargado");
+        infoAncho.textContent = "--";
+        infoAlto.textContent = "--";
+        infoExport.textContent = "--";
+        elementosActuales = [];
+        espaciador.style.width = "0px";
+        espaciador.style.height = "0px";
+
+        menuCapas.innerHTML = "";
+        dropdownDescarga.innerHTML = "";
+        btnCapasActivo.disabled = true;
+        textoCapaActivo.textContent = "Esperando archivo…";
+        contenedorDesplegableCapas.classList.remove("abierto");
+        indiceSeleccionadoActual = 0;
+        esCargaInicial = true;
+      }
+
+      // CÓDIGO NUEVO
+      entradaHtml.addEventListener("change", (e) => {
+        const archivo = e.target.files[0];
+        if (!archivo) return;
+
+        // Enviamos el archivo a la validación centralizada
+        validarYProcesarArchivo(archivo);
+
+        // Limpiamos el valor del input para permitir subir el mismo archivo consecutivamente si se desea
+        e.target.value = "";
+      });
+
+      function mostrarErrorEnCaja(mensaje) {
+        const cajaSubida = document.getElementById("zona-arrastre");
+        const etiquetaTexto = document.getElementById("nombre-archivo");
+        const icono = cajaSubida.querySelector("i");
+
+        etiquetaTexto.textContent = mensaje;
+        cajaSubida.classList.add("error-archivo");
+
+        if (icono) icono.style.color = "#f43f5e";
+
+        setTimeout(() => {
+          etiquetaTexto.textContent = TEXTO_SUBIDA_ORIGINAL;
+          cajaSubida.classList.remove("error-archivo"); // Quitamos la clase de error
+          if (icono) icono.style.color = "";
+        }, 1500);
+      }
+
+      function validarYProcesarArchivo(archivo) {
+        if (!archivo) return;
+
+        if (!(archivo.name.endsWith(".html") || archivo.name.endsWith(".htm"))) {
+          mostrarErrorEnCaja("Formato de archivo no válido");
+          return;
+        }
+
+        areaVisualizacion.classList.add("sin-transicion");
+        resetearInterfaz();
+
+        const cargadorArchivo = document.getElementById("cargador-archivo");
+        cargadorArchivo.classList.add("activo");
+        vistaVacia.classList.add("oculto");
+
+        contenedor.style.display = "block";
+        contenedor.style.opacity = "0";
+        contenedor.classList.remove("visible");
+
+        setTimeout(async () => {
+          document.getElementById("nombre-archivo").textContent = archivo.name;
+          htmlOriginal = await archivo.text();
+
+          const timeoutSeguridad = setTimeout(() => {
+            if (elementosActuales.length === 0) {
+              mostrarMensajeError();
+            }
+          }, 5000);
+
+          escribirEnIframe(htmlOriginal, () => {
+            clearTimeout(timeoutSeguridad);
+            analizarYCrearSelector();
+          });
+        }, 100);
+      }
+
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((nombreEvento) => {
+        zonaArrastre.addEventListener(nombreEvento, (e) => e.preventDefault(), false);
+      });
+
+      ["dragenter", "dragover"].forEach((nombreEvento) => {
+        zonaArrastre.addEventListener(
+          nombreEvento,
+          () => {
+            zonaArrastre.classList.add("arrastrando");
+          },
+          false,
+        );
+      });
+
+      ["dragleave", "drop"].forEach((nombreEvento) => {
+        zonaArrastre.addEventListener(
+          nombreEvento,
+          () => {
+            zonaArrastre.classList.remove("arrastrando");
+          },
+          false,
+        );
+      });
+
+      zonaArrastre.addEventListener("drop", (e) => {
+        const dt = e.dataTransfer;
+        const archivos = dt.files;
+
+        if (archivos.length > 0) {
+          const archivo = archivos[0];
+          validarYProcesarArchivo(archivo);
+        }
+      });
+
+      function escribirEnIframe(html, alTerminar) {
+        const contenedorCaptura = document.getElementById("contenedor-captura");
+        const cargadorArchivo = document.getElementById("cargador-archivo");
+        cargadorArchivo.classList.add("activo");
+
+        const iframeViejo = document.getElementById("marco-previsualizacion");
+        if (iframeViejo) iframeViejo.remove();
+
+        const nuevoIframe = document.createElement("iframe");
+        nuevoIframe.id = "marco-previsualizacion";
+        nuevoIframe.className = "marco-previsualizacion";
+        nuevoIframe.scrolling = "no";
+
+        nuevoIframe.onload = () => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              alTerminar();
+              cargadorArchivo.classList.remove("activo");
+            });
+          });
+        };
+
+        contenedorCaptura.appendChild(nuevoIframe);
+
+        const doc = nuevoIframe.contentWindow.document;
+        doc.open();
+        doc.write(html);
+
+        const estilo = doc.createElement("style");
+        estilo.textContent = `
+          body { margin: 0 !important; padding: 0 !important; overflow: visible !important; background: transparent !important; }
+          .__oculto { display: none !important; }
+        `;
+        doc.head.appendChild(estilo);
+
+        doc.close();
+        marcoPrevisualizacion = nuevoIframe;
+      }
+
+      function cambiarCapaPorIndice(idx) {
+        if (elementosActuales.length === 0) return;
+
+        if (idx < 0 || idx >= elementosActuales.length) return;
+
+        indiceSeleccionadoActual = idx;
+
+        const opciones = menuCapas.querySelectorAll(".opcion-capa");
+        opciones.forEach((b) => b.classList.remove("seleccionada"));
+
+        const opcionActiva = menuCapas.querySelector(`.opcion-capa[data-idx="${idx}"]`);
+        if (opcionActiva) {
+          opcionActiva.classList.add("seleccionada");
+          textoCapaActivo.textContent = opcionActiva.textContent;
+        }
+
+        actualizarVista(idx);
+
+        actualizarVisibilidadFlechas();
+      }
+
+      function actualizarVisibilidadFlechas() {
+        if (elementosActuales.length <= 1) {
+          btnNavIzq.classList.remove("habilitada");
+          btnNavDer.classList.remove("habilitada");
+          return;
+        }
+
+        btnNavIzq.classList.add("habilitada");
+        btnNavDer.classList.add("habilitada");
+
+        if (indiceSeleccionadoActual === 0) {
+          btnNavIzq.disabled = true;
+          btnNavDer.disabled = false;
+        } else if (indiceSeleccionadoActual === elementosActuales.length - 1) {
+          btnNavIzq.disabled = false;
+          btnNavDer.disabled = true;
+        } else {
+          btnNavIzq.disabled = false;
+          btnNavDer.disabled = false;
+        }
+      }
+
+      function analizarYCrearSelector() {
+        const doc = marcoPrevisualizacion.contentWindow.document;
+        const capas = Array.from(doc.body.children).filter((el) => el.tagName === "DIV");
+
+        menuCapas.innerHTML = "";
+        elementosActuales = [];
+
+        if (capas.length > 0) {
+          document.getElementById("panel-control").classList.add("archivo-cargado");
+
+          capas.forEach((div, i) => {
+            elementosActuales.push(div);
+
+            const nombreBase = div.id || div.className.split(" ")[0] || `elemento_${i + 1}`;
+            const textoVisual = div.id ? `#${div.id}` : `div ${i + 1}: ${div.className.split(" ")[0] || "div"}`;
+
+            const botonOpcion = document.createElement("button");
+            botonOpcion.className = "opcion-capa";
+            botonOpcion.dataset.idx = i;
+            botonOpcion.dataset.nombreLimpio = nombreBase;
+            botonOpcion.textContent = textoVisual;
+
+            botonOpcion.addEventListener("click", function () {
+              const idx = parseInt(this.dataset.idx);
+              cambiarCapaPorIndice(idx);
+            });
+
+            menuCapas.appendChild(botonOpcion);
+          });
+
+          actualizarVisibilidadFlechas();
+
+          if (menuCapas.scrollHeight > menuCapas.clientHeight) {
+            menuCapas.classList.add("tiene-scroll");
+          } else {
+            menuCapas.classList.remove("tiene-scroll");
+          }
+
+          const primeraOpcion = menuCapas.querySelector(".opcion-capa");
+          if (primeraOpcion) {
+            primeraOpcion.classList.add("seleccionada");
+            textoCapaActivo.textContent = primeraOpcion.textContent;
+          }
+
+          btnCapasActivo.disabled = false;
+          btnCalidad.disabled = false;
+          if (typeof btnVistaActivo !== "undefined") btnVistaActivo.disabled = false;
+          grupoDescarga.classList.remove("deshabilitado");
+
+          configurarMenuDescarga(capas.length);
+          botonDescargaFlecha.classList.remove("flecha-restringida");
+
+          actualizarVista(0);
+        } else {
+          mostrarMensajeError("No se encontraron elementos <div> válidos en el body del HTML.");
+        }
+      }
+
+      btnNavIzq.addEventListener("click", (e) => {
+        e.stopPropagation();
+        cambiarCapaPorIndice(indiceSeleccionadoActual - 1);
+      });
+
+      btnNavDer.addEventListener("click", (e) => {
+        e.stopPropagation();
+        cambiarCapaPorIndice(indiceSeleccionadoActual + 1);
+      });
+
+      function configurarMenuDescarga(cantidadCapas) {
+        dropdownDescarga.innerHTML = "";
+
+        if (cantidadCapas === 1) {
+          const btnPdf = document.createElement("button");
+          btnPdf.className = "opcion-descarga";
+          btnPdf.id = "btn-descargar-pdf";
+          btnPdf.innerHTML = '<i class="ph-duotone ph-file-text"></i> Descargar diseño en PDF';
+          btnPdf.addEventListener("click", (e) => {
+            e.stopPropagation();
+            grupoDescarga.classList.remove("abierto");
+            ejecutarExportacionPdf();
+          });
+          dropdownDescarga.appendChild(btnPdf);
+        } else {
+          const btnPdfActual = document.createElement("button");
+          btnPdfActual.className = "opcion-descarga";
+          btnPdfActual.id = "btn-descargar-pdf-actual";
+          btnPdfActual.innerHTML = '<i class="ph-duotone ph-file-text"></i> Descargar diseño actual en PDF';
+          btnPdfActual.addEventListener("click", (e) => {
+            e.stopPropagation();
+            grupoDescarga.classList.remove("abierto");
+            ejecutarExportacionPdf();
+          });
+
+          const btnTodosPdf = document.createElement("button");
+          btnTodosPdf.className = "opcion-descarga";
+          btnTodosPdf.id = "btn-descargar-todos-pdf";
+          btnTodosPdf.innerHTML = '<i class="ph-duotone ph-files"></i> Descargar todo en PDF';
+          btnTodosPdf.addEventListener("click", (e) => {
+            e.stopPropagation();
+            grupoDescarga.classList.remove("abierto");
+            ejecutarExportacionTodoEnUnPdf();
+          });
+
+          const btnTodosPng = document.createElement("button");
+          btnTodosPng.className = "opcion-descarga";
+          btnTodosPng.id = "btn-descargar-todos";
+          btnTodosPng.innerHTML = '<i class="ph-duotone ph-images-square"></i> Descargar todas las imágenes';
+          btnTodosPng.addEventListener("click", (e) => {
+            e.stopPropagation();
+            grupoDescarga.classList.remove("abierto");
+            ejecutarDescargaMasivaPng();
+          });
+
+          dropdownDescarga.appendChild(btnTodosPdf);
+
+          dropdownDescarga.appendChild(btnPdfActual);
+          dropdownDescarga.appendChild(btnTodosPng);
+        }
+      }
+
+      function ejecutarExportacionTodoEnUnPdf() {
+        if (elementosActuales.length === 0) return;
+
+        const docIframe = marcoPrevisualizacion.contentWindow.document;
+
+        let nombreBase = docIframe.title.trim();
+
+        if (nombreBase) {
+          nombreBase = nombreBase
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-_]/g, "");
+        } else {
+          nombreBase = "diseno_completo_paginado";
+        }
+        actualizarEstadoBoton("cargando", "pdf");
+
+        const tituloOriginalApp = document.title;
+
+        try {
+          document.title = nombreBase;
+
+          const dimsBase = obtenerDimensionesElemento(elementosActuales[0]);
+
+          const estilosOriginales = Array.from(marcoPrevisualizacion.contentWindow.document.head.querySelectorAll("style, link, meta")).map((nodo) => nodo.cloneNode(true));
+
+          const iframeImpresion = document.createElement("iframe");
+          iframeImpresion.className = "iframe-impresion-oculto";
+          iframeImpresion.style.width = dimsBase.w + "px";
+          iframeImpresion.style.height = dimsBase.h + "px";
+
+          document.body.appendChild(iframeImpresion);
+
+          const docImpresion = iframeImpresion.contentWindow.document;
+          docImpresion.open();
+          docImpresion.write(`<!doctype html><html><head><title>${nombreBase}</title></head><body></body></html>`);
+
+          estilosOriginales.forEach((estilo) => docImpresion.head.appendChild(estilo));
+
+          let cssDinamico = `
+            html, body {
+              margin: 0 !important;
+              padding: 0 !important;
+              background: transparent !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            .pagina-pdf {
+              display: block !important;
+              position: relative !important;
+              overflow: hidden !important;
+              box-sizing: border-box !important;
+              page-break-after: always !important;
+              break-after: page !important;
+            }
+            .pagina-pdf:last-child {
+              page-break-after: avoid !important;
+              break-after: avoid !important;
+            }
+          `;
+
+          elementosActuales.forEach((objetivo, i) => {
+            const dims = obtenerDimensionesElemento(objetivo);
+            const nombrePagina = `capa_pag_${i}`;
+
+            cssDinamico += `
+              @page ${nombrePagina} {
+                size: ${dims.w}px ${dims.h}px;
+                margin: 0 !important;
+              }
+              .asignar-pagina-${i} {
+                page: ${nombrePagina};
+                width: ${dims.w}px !important;
+                height: ${dims.h}px !important;
+              }
+            `;
+
+            const contenedorPagina = docImpresion.createElement("div");
+            contenedorPagina.className = `pagina-pdf asignar-pagina-${i}`;
+
+            const clonDiv = objetivo.cloneNode(true);
+            clonDiv.classList.remove("__oculto");
+
+            contenedorPagina.appendChild(clonDiv);
+            docImpresion.body.appendChild(contenedorPagina);
+          });
+
+          const estiloImpresionRegulada = docImpresion.createElement("style");
+          estiloImpresionRegulada.textContent = cssDinamico;
+          docImpresion.head.appendChild(estiloImpresionRegulada);
+
+          docImpresion.close();
+
+          setTimeout(() => {
+            iframeImpresion.contentWindow.focus();
+            iframeImpresion.contentWindow.print();
+
+            setTimeout(() => {
+              iframeImpresion.remove();
+              document.title = tituloOriginalApp;
+            }, 1000);
+
+            actualizarEstadoBoton("exito", "pdf");
+          }, 600);
+        } catch (err) {
+          console.error("Error al procesar el PDF multipágina con dimensiones dinámicas:", err);
+          document.title = tituloOriginalApp;
+          actualizarEstadoBoton("error", "pdf");
+        }
+      }
+
+      function obtenerDimensionesElemento(el) {
+        const estabaOculto = el.classList.contains("__oculto");
+        if (estabaOculto) el.classList.remove("__oculto");
+
+        const rect = el.getBoundingClientRect();
+        const estiloCalculado = marcoPrevisualizacion.contentWindow.getComputedStyle(el);
+        const w = Math.round(Math.max(parseFloat(estiloCalculado.width) || rect.width));
+        const h = Math.round(Math.max(parseFloat(estiloCalculado.height) || rect.height));
+
+        if (estabaOculto) el.classList.add("__oculto");
+
+        return { w, h };
+      }
+
+      function actualizarVista(indice) {
+        if (elementosActuales.length === 0) return;
+
+        // Si es la carga inicial, procesamos directo sin pasar por el setTimeout de desvanecimiento
+        if (esCargaInicial) {
+          procesarCambioDeCapa(indice);
+        } else {
+          if (contenedor.classList.contains("visible")) {
+            contenedor.classList.remove("visible");
+            setTimeout(() => {
+              procesarCambioDeCapa(indice);
+            }, 100);
+          } else {
+            procesarCambioDeCapa(indice);
+          }
+        }
+      }
+
+      // Nueva función auxiliar interna para realizar el cambio en el momento exacto
+      function procesarCambioDeCapa(indice) {
+        elementosActuales.forEach((el) => el.classList.remove("__oculto"));
+        ajustarTamanoIframe(4000, 4000);
+
+        const el = elementosActuales[indice];
+        const dims = obtenerDimensionesElemento(el);
+        const w = dims.w;
+        const h = dims.h;
+
+        elementosActuales.forEach((otro, i) => {
+          if (i !== indice) otro.classList.add("__oculto");
+        });
+
+        ajustarTamanoIframe(w, h);
+        contenedor.style.display = "block";
+
+        el.dataset.exportW = w;
+        el.dataset.exportH = h;
+        infoAncho.textContent = w + "px";
+        infoAlto.textContent = h + "px";
+        infoExport.textContent = `${w * ratioActual} × ${h * ratioActual}px`;
+
+        aplicarEscalaYScrolls();
+
+        // Forzar reflow del navegador para asegurar que registre los cambios geométricos
+        void contenedor.offsetWidth;
+
+        if (esCargaInicial) {
+          // Una vez todo posicionado en su sitio exacto, quitamos el bloqueo de transiciones
+          areaVisualizacion.classList.remove("sin-transicion");
+          esCargaInicial = false; // Apagamos la bandera para que las flechas funcionen normal
+        }
+
+        // Paso B: Animación de entrada (sube opacidad a 1)
+        contenedor.classList.add("visible");
+      }
+
+      function ajustarTamanoIframe(w, h) {
+        const marco = document.getElementById("marco-previsualizacion");
+        contenedor.style.width = w + "px";
+        contenedor.style.height = h + "px";
+        if (marco) {
+          marco.style.width = w + "px";
+          marco.style.height = h + "px";
+        }
+      }
+
+      function aplicarEscalaYScrolls() {
+        const w = parseInt(infoAncho.textContent);
+        const h = parseInt(infoAlto.textContent);
+        if (isNaN(w) || !w) return;
+
+        const margenPadding = 40;
+        const disponibleW = areaVisualizacion.clientWidth - margenPadding * 2;
+        const disponibleH = areaVisualizacion.clientHeight - margenPadding * 2;
+
+        let escala = 1;
+
+        if (vistaActual === 1) {
+          escala = disponibleW / w;
+        } else if (vistaActual === 2) {
+          escala = disponibleH / h;
+        } else if (vistaActual === 3) {
+          const escalaAncho = disponibleW / w;
+          const escalaAlto = disponibleH / h;
+          escala = Math.min(escalaAncho, escalaAlto);
+        } else {
+          escala = 1;
+        }
+
+        const anchoEscalado = w * escala;
+        const altoEscalado = h * escala;
+
+        espaciador.style.width = `${anchoEscalado}px`;
+        espaciador.style.height = `${altoEscalado}px`;
+
+        let desvioX = 0;
+        let desvioY = 0;
+
+        if (anchoEscalado < disponibleW) {
+          desvioX = (disponibleW - anchoEscalado) / 2;
+        }
+        if (altoEscalado < disponibleH) {
+          desvioY = (disponibleH - altoEscalado) / 2;
+        }
+
+        contenedor.style.transform = `scale(${escala})`;
+        contenedor.style.setProperty("--escala", escala);
+        contenedor.style.left = `${desvioX}px`;
+        contenedor.style.top = `${desvioY}px`;
+      }
+
+      function actualizarEstadoBoton(estado, tipoOperacion = "imagen") {
+        const icono = document.getElementById("icono-boton");
+        const texto = document.getElementById("texto-boton");
+
+        grupoDescarga.classList.remove("exito", "error", "boton-cargando");
+
+        if (estado === "cargando") {
+          grupoDescarga.classList.add("boton-cargando");
+          grupoDescarga.classList.add("deshabilitado");
+        } else if (estado === "exito") {
+          grupoDescarga.classList.remove("boton-cargando");
+          grupoDescarga.classList.add("exito");
+          grupoDescarga.classList.add("deshabilitado");
+
+          if (tipoOperacion === "masivo") {
+            icono.className = "ph-duotone ph-confetti";
+            texto.textContent = "Imágenes descargadas";
+          } else if (tipoOperacion === "pdf") {
+            icono.className = "ph-duotone ph-confetti";
+            texto.textContent = "PDF descargado";
+          } else {
+            icono.className = "ph-duotone ph-confetti";
+            texto.textContent = "Imagen descargada";
+          }
+          restaurarBoton();
+        } else if (estado === "error") {
+          grupoDescarga.classList.remove("boton-cargando");
+          grupoDescarga.classList.add("error");
+          grupoDescarga.classList.add("deshabilitado");
+          icono.className = "ph-duotone ph-seal-warning";
+          texto.textContent = "Error al descargar";
+          restaurarBoton();
+        }
+
+        function restaurarBoton() {
+          setTimeout(() => {
+            grupoDescarga.classList.remove("exito", "error", "deshabilitado", "boton-cargando");
+            icono.className = "ph-duotone ph-image-square";
+
+            texto.textContent = TEXTO_BOTON_ORIGINAL;
+          }, 1500);
+        }
+      }
+
+      function verificarLibreriaIframe(ventanaIframe, callback) {
+        if (!ventanaIframe.htmlToImage) {
+          const s = ventanaIframe.document.createElement("script");
+          s.src = "https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js";
+          s.onload = callback;
+          ventanaIframe.document.head.appendChild(s);
+        } else {
+          callback();
+        }
+      }
+
+      botonDescarga.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const indice = indiceSeleccionadoActual;
+        const objetivo = elementosActuales[indice];
+
+        if (!objetivo) return;
+
+        const opcionActiva = menuCapas.querySelector(`.opcion-capa[data-idx="${indice}"]`);
+        const nombreBase = opcionActiva ? opcionActiva.dataset.nombreLimpio : `elemento_${indice + 1}`;
+
+        actualizarEstadoBoton("cargando", "imagen");
+        const ventanaIframe = marcoPrevisualizacion.contentWindow;
+
+        verificarLibreriaIframe(ventanaIframe, () => {
+          const dims = obtenerDimensionesElemento(objetivo);
+
+          realizarCaptura(objetivo, ventanaIframe.htmlToImage, nombreBase, dims.w, dims.h)
+            .then(() => actualizarEstadoBoton("exito", "imagen"))
+            .catch((error) => {
+              console.error("Error en la captura:", error);
+              actualizarEstadoBoton("error", "imagen");
+            });
+        });
+      });
+
+      async function ejecutarDescargaMasivaPng() {
+        if (elementosActuales.length === 0) return;
+
+        actualizarEstadoBoton("cargando", "masivo");
+        const ventanaIframe = marcoPrevisualizacion.contentWindow;
+
+        verificarLibreriaIframe(ventanaIframe, async () => {
+          try {
+            for (let i = 0; i < elementosActuales.length; i++) {
+              const objetivo = elementosActuales[i];
+              const opcionPersonalizada = menuCapas.querySelector(`.opcion-capa[data-idx="${i}"]`);
+              const nombreBase = opcionPersonalizada ? opcionPersonalizada.dataset.nombreLimpio : `elemento_${i + 1}`;
+
+              elementosActuales.forEach((el, idx) => {
+                if (idx === i) el.classList.remove("__oculto");
+                else el.classList.add("__oculto");
+              });
+
+              const dims = obtenerDimensionesElemento(objetivo);
+              ajustarTamanoIframe(dims.w, dims.h);
+
+              await realizarCaptura(objetivo, ventanaIframe.htmlToImage, nombreBase, dims.w, dims.h);
+            }
+
+            actualizarEstadoBoton("exito", "masivo");
+          } catch (error) {
+            console.error("Error en procesamiento masivo:", error);
+            actualizarEstadoBoton("error", "masivo");
+          } finally {
+            setTimeout(() => {
+              actualizarVista(indiceSeleccionadoActual);
+            }, 200);
+          }
+        });
+      }
+
+      function ejecutarExportacionPdf() {
+        const indice = indiceSeleccionadoActual;
+        const objetivo = elementosActuales[indice];
+        if (!objetivo) return;
+
+        const opcionActiva = menuCapas.querySelector(`.opcion-capa[data-idx="${indice}"]`);
+        const nombreBase = opcionActiva ? opcionActiva.dataset.nombreLimpio : `documento_${indice + 1}`;
+
+        actualizarEstadoBoton("cargando", "pdf");
+
+        const tituloOriginalApp = document.title;
+
+        try {
+          document.title = nombreBase;
+
+          const dims = obtenerDimensionesElemento(objetivo);
+
+          const estilosOriginales = Array.from(marcoPrevisualizacion.contentWindow.document.head.querySelectorAll("style, link, meta")).map((nodo) => nodo.cloneNode(true));
+
+          const contenidoClonado = objetivo.cloneNode(true);
+          contenidoClonado.classList.remove("__oculto");
+
+          const iframeImpresion = document.createElement("iframe");
+          iframeImpresion.style.position = "fixed";
+          iframeImpresion.style.width = dims.w + "px";
+          iframeImpresion.style.height = dims.h + "px";
+          iframeImpresion.style.top = "-9999px";
+          iframeImpresion.style.left = "-9999px";
+
+          document.body.appendChild(iframeImpresion);
+
+          const docImpresion = iframeImpresion.contentWindow.document;
+          docImpresion.open();
+          docImpresion.write(`<!doctype html><html><head><title>${nombreBase}</title></head><body></body></html>`);
+
+          estilosOriginales.forEach((estilo) => docImpresion.head.appendChild(estilo));
+
+          const estiloImpresionRegulada = docImpresion.createElement("style");
+          estiloImpresionRegulada.textContent = `
+            @page {
+              size: ${dims.w}px ${dims.h}px;
+              margin: 0 !important;
+            }
+            html, body {
+              margin: 0 !important;
+              padding: 0 !important;
+              width: ${dims.w}px !important;
+              height: ${dims.h}px !important;
+              background: transparent !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+          `;
+          docImpresion.head.appendChild(estiloImpresionRegulada);
+          docImpresion.body.appendChild(contenidoClonado);
+          docImpresion.close();
+
+          setTimeout(() => {
+            iframeImpresion.contentWindow.focus();
+            iframeImpresion.contentWindow.print();
+
+            setTimeout(() => {
+              iframeImpresion.remove();
+              document.title = tituloOriginalApp;
+            }, 1000);
+
+            actualizarEstadoBoton("exito", "pdf");
+          }, 500);
+        } catch (err) {
+          console.error("Fallo durante la inicialización del motor PDF:", err);
+          document.title = tituloOriginalApp;
+          actualizarEstadoBoton("error", "pdf");
+        }
+      }
+
+      function realizarCaptura(objetivo, libreria, nombreBase, w, h) {
+        return libreria
+          .toPng(objetivo, {
+            quality: 1,
+            pixelRatio: ratioActual,
+            width: w,
+            height: h,
+            skipAutoScale: true,
+            cacheBust: true,
+            style: {
+              margin: "0",
+              transform: "none",
+              left: "0",
+              top: "0",
+            },
+          })
+          .then((urlImagen) => {
+            const enlace = document.createElement("a");
+            enlace.download = `${nombreBase}.png`;
+            enlace.href = urlImagen;
+            enlace.click();
+          });
+      }
+
+      const btnCalidad = document.getElementById("selector-calidad");
+      const txtRatio = document.getElementById("valor-ratio");
+      let ratioActual = 1;
+
+      btnCalidad.addEventListener("click", () => {
+        ratioActual = ratioActual >= 3 ? 1 : ratioActual + 1;
+        txtRatio.textContent = ratioActual;
+
+        const w = parseInt(infoAncho.textContent);
+        const h = parseInt(infoAlto.textContent);
+
+        if (!isNaN(w) && !isNaN(h)) {
+          infoExport.textContent = `${w * ratioActual} × ${h * ratioActual}px`;
+        }
+      });
+
+      function mostrarMensajeError(mensaje) {
+        const cargadorArchivo = document.getElementById("cargador-archivo");
+        if (cargadorArchivo) cargadorArchivo.classList.remove("activo");
+        document.getElementById("panel-control").classList.remove("archivo-cargado");
+        vistaVacia.classList.remove("oculto");
+
+        vistaVacia.innerHTML = `
+          <i class="ph-duotone ph-siren mensaje-error-icono"></i>
+          <div class="mensaje-error-texto">
+            <p>El archivo no se puede visualizar</p>          
+          </div>
+        `;
+
+        contenedor.style.display = "none";
+        contenedor.style.opacity = "0";
+        btnVistaActivo.disabled = true;
+        grupoDescarga.classList.add("deshabilitado");
+        botonDescargaFlecha.classList.add("flecha-restringida");
+      }
+    </script>
+  </body>
+</html>
