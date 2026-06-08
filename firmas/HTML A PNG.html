@@ -17,17 +17,20 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
-      [data-theme="dark"] {
+      :root {
         --color-primario: #6366f1;
         --color-primario-hover: #4f46e5;
+        --transicion-suave: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --hover-transparente: rgb(99 102 241 / 15%);
+      }
+
+      [data-theme="dark"] {
         --fondo-principal: #111827;
         --fondo-tarjeta: #1e293b;
         --texto-principal: #f8fafc;
         --texto-secundario: #94a3b8;
         --borde: 1px solid rgb(255 255 255 / 20%);
-        --transicion-suave: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         --transparencia: rgb(0 0 0 / 20%);
-        --hover-transparente: rgb(99 102 241 / 15%);
         --scroll: 255 255 255;
         --color-descarga: var(--texto-principal);
         --sombra-desplegables: 0 0 5px rgb(var(--scroll) / 25%);
@@ -35,14 +38,11 @@
       }
 
       [data-theme="light"] {
-        --color-primario: #6366f1;
-        --color-primario-hover: #4f46e5;
         --fondo-principal: #f1f5f9;
         --fondo-tarjeta: #f8fafc;
         --texto-principal: #1e293b;
         --texto-secundario: #64748b;
         --borde: 1px solid rgb(0 0 0 / 20%);
-        --transicion-suave: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         --transparencia: rgb(0 0 0 / 2.5%);
         --hover-transparente: rgb(99 102 241 / 15%);
         --scroll: 0 0 0;
@@ -84,6 +84,7 @@
         font-weight: 800;
         font-size: 22px;
         transition: var(--transicion-suave);
+        cursor: pointer;
       }
 
       .logotipo i {
@@ -153,6 +154,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         display: block;
+        transition: var(--transicion-suave);
       }
 
       .subida-archivo {
@@ -172,9 +174,19 @@
         font-weight: 500;
       }
 
+      .subida-archivo.arrastrando {
+        border-color: var(--color-primario) !important;
+        background: var(--hover-transparente) !important;
+      }
+
       .subida-archivo:hover {
         border-color: var(--color-primario);
         background: var(--hover-transparente);
+      }
+
+      .subida-archivo.error-archivo {
+        color: #f43f5e !important;
+        cursor: not-allowed;
       }
 
       .subida-archivo i {
@@ -211,6 +223,11 @@
         flex-shrink: 0;
       }
 
+      .btn-navegacion i {
+        font-size: 20px;
+        color: var(--color-descarga);
+      }
+
       .archivo-cargado .subida-archivo i {
         color: var(--texto-principal);
       }
@@ -236,19 +253,22 @@
         display: flex;
         justify-content: space-between;
         font-size: 12px;
-      }
-
-      .etiqueta-info {
-        color: var(--texto-secundario);
-        transition: var(--transicion-suave);
-      }
-
-      .archivo-cargado .etiqueta-info {
-        color: var(--texto-principal);
+        align-items: baseline;
       }
 
       .valor-info {
         font-size: 11px;
+      }
+
+      .etiqueta-info,
+      .valor-info {
+        color: var(--texto-secundario);
+        transition: var(--transicion-suave);
+      }
+
+      .archivo-cargado .etiqueta-info,
+      .archivo-cargado .valor-info {
+        color: var(--texto-principal);
       }
 
       .grupo-botones {
@@ -420,12 +440,19 @@
         background-color: var(--fondo-principal);
         position: relative;
         overflow: hidden;
-        display: block;
+        padding: 0;
+        height: 100%;
+      }
+
+      .contenedor-scroll-interno {
+        width: 100%;
+        height: 100%;
+        overflow: auto;
         padding: 40px;
       }
 
       .area-visualizacion:has(.contenedor-captura.visible) {
-        overflow: auto;
+        overflow: hidden;
       }
 
       .espaciador-virtual {
@@ -449,11 +476,17 @@
         flex-shrink: 0;
         transform-origin: top left;
         pointer-events: auto;
+        transition:
+          opacity 0.1s ease-in-out,
+          transform 0.1s ease-in-out,
+          left 0.1s ease-in-out,
+          top 0.1s ease-in-out,
+          width 0.1s ease-in-out,
+          height 0.1s ease-in-out !important;
       }
 
       .contenedor-captura.visible {
         opacity: 1 !important;
-        transition: var(--transicion-suave);
       }
 
       .marco-previsualizacion {
@@ -854,6 +887,50 @@
         left: -9999px;
       }
 
+      .btn-navegacion {
+        display: none;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--color-primario);
+        padding: 10px;
+        border-radius: 50%;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transicion-suave);
+        z-index: 150;
+        box-shadow: var(--sombra-desplegables);
+        border: none;
+      }
+
+      .btn-navegacion.habilitada {
+        display: flex;
+      }
+
+      .btn-navegacion:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-navegacion:not(:disabled):hover {
+        background: var(--color-primario-hover);
+      }
+
+      .nav-izq {
+        display: none;
+        left: 20px;
+      }
+
+      .nav-der {
+        display: none;
+        right: 20px;
+      }
+
+      .sin-transicion #contenedor-captura {
+        transition: none !important;
+      }
+
       @keyframes parpadeo {
         0%,
         100% {
@@ -868,7 +945,7 @@
   </head>
   <body>
     <header class="encabezado">
-      <div class="logotipo" style="cursor: pointer" onclick="window.location.reload()">
+      <div class="logotipo" onclick="window.location.reload()">
         <i class="ph-duotone ph-intersect"></i>
         <span>HTML a PNG/PDF<span class="cursor-animado">_</span></span>
       </div>
@@ -877,17 +954,17 @@
         <div class="contenedor-desplegable-vista" id="contenedor-desplegable">
           <button class="btn-encabezado-vista" id="btn-vista-activo" title="Modo de ajuste de vista" disabled>
             <div class="grupo-texto">
-              <i class="ph-duotone ph-frame-corners" id="icono-vista-activo"></i>
+              <i id="icono-vista-activo" class=""></i>
               <span id="texto-vista-activo">Tamaño real</span>
             </div>
             <i class="ph-duotone ph-caret-down flecha-menu"></i>
           </button>
 
           <div class="menu-opciones-vista" id="menu-vistas">
-            <button class="opcion-vista" data-idx="0"><i class="ph-duotone ph-frame-corners"></i> Tamaño real</button>
-            <button class="opcion-vista" data-idx="1"><i class="ph-duotone ph-arrows-out-line-horizontal"></i> Ajustar al ancho</button>
-            <button class="opcion-vista" data-idx="2"><i class="ph-duotone ph-arrows-out-line-vertical"></i> Ajustar al alto</button>
-            <button class="opcion-vista" data-idx="3"><i class="ph-duotone ph-arrows-out"></i> Encajar todo</button>
+            <button class="opcion-vista" data-idx="0"><i class="ph-duotone ph-frame-corners"></i>Tamaño real</button>
+            <button class="opcion-vista" data-idx="1"><i class="ph-duotone ph-arrows-out-line-horizontal"></i>Ajustar al ancho</button>
+            <button class="opcion-vista" data-idx="2"><i class="ph-duotone ph-arrows-out-line-vertical"></i>Ajustar al alto</button>
+            <button class="opcion-vista" data-idx="3"><i class="ph-duotone ph-arrows-out"></i>Encajar todo</button>
           </div>
         </div>
 
@@ -902,9 +979,10 @@
         <div class="contenido-scroll">
           <div>
             <p class="titulo-seccion">1. Archivo:</p>
-            <label for="entrada-html" class="subida-archivo">
+            <label for="entrada-html" class="subida-archivo" id="zona-arrastre">
               <i class="ph-duotone ph-file-code"></i>
-              <span id="nombre-archivo" class="nombre-archivo">Seleccionar archivo .html</span> <input type="file" id="entrada-html" accept=".html,.htm" hidden />
+              <span id="nombre-archivo" class="nombre-archivo">Selecciona un archivo HTML</span>
+              <input type="file" id="entrada-html" accept=".html,.htm" hidden />
             </label>
           </div>
 
@@ -971,15 +1049,25 @@
       </div>
 
       <div class="area-visualizacion" id="area-visualizacion">
+        <button id="btn-nav-izq" class="btn-navegacion nav-izq" title="Elemento anterior">
+          <i class="ph-duotone ph-caret-left"></i>
+        </button>
+
+        <button id="btn-nav-der" class="btn-navegacion nav-der" title="Elemento posterior">
+          <i class="ph-duotone ph-caret-right"></i>
+        </button>
+
         <i class="ph-duotone ph-circle-notch cargador cargador-archivo" id="cargador-archivo"></i>
         <div id="vacio" class="mensaje-vacio">
           <i class="ph-duotone ph-binoculars"></i>
           <p>Selecciona un archivo para visualizarlo…</p>
         </div>
 
-        <div class="espaciador-virtual" id="espaciador">
-          <div id="contenedor-captura" class="contenedor-captura">
-            <iframe id="marco-previsualizacion" class="marco-previsualizacion" scrolling="no"></iframe>
+        <div class="contenedor-scroll-interno">
+          <div class="espaciador-virtual" id="espaciador">
+            <div id="contenedor-captura" class="contenedor-captura">
+              <iframe id="marco-previsualizacion" class="marco-previsualizacion" scrolling="no"></iframe>
+            </div>
           </div>
         </div>
       </div>
@@ -1004,6 +1092,7 @@
       });
 
       const entradaHtml = document.getElementById("entrada-html");
+      const zonaArrastre = document.getElementById("zona-arrastre");
       const contenedor = document.getElementById("contenedor-captura");
       const espaciador = document.getElementById("espaciador");
       let marcoPrevisualizacion = document.getElementById("marco-previsualizacion");
@@ -1013,6 +1102,9 @@
       const btnCapasActivo = document.getElementById("btn-capas-activo");
       const textoCapaActivo = document.getElementById("texto-capa-activo");
       const menuCapas = document.getElementById("menu-capas");
+
+      const btnNavIzq = document.getElementById("btn-nav-izq");
+      const btnNavDer = document.getElementById("btn-nav-der");
 
       let indiceSeleccionadoActual = 0;
 
@@ -1033,17 +1125,31 @@
       const iconoVistaActivo = document.getElementById("icono-vista-activo");
       const opcionesVista = document.querySelectorAll(".opcion-vista");
 
+      const primerIconoMenu = opcionesVista[0]?.querySelector("i")?.className;
+      if (primerIconoMenu) {
+        document.getElementById("icono-vista-activo").className = primerIconoMenu;
+      }
+
       let elementosActuales = [];
       let htmlOriginal = "";
+      let esCargaInicial = true;
+
+      const TEXTO_SUBIDA_ORIGINAL = document.getElementById("nombre-archivo")?.textContent || "";
+      const TEXTO_BOTON_ORIGINAL = document.getElementById("texto-boton")?.textContent || "";
+      const ICONO_BOTON_ORIGINAL = document.getElementById("icono-boton")?.className || "";
+
+      const ICONO_EXITO = "ph-duotone ph-confetti";
+      const ICONO_ERROR = "ph-duotone ph-seal-warning";
 
       const VISTA_POR_DEFECTO = 3;
       let vistaActual = VISTA_POR_DEFECTO;
-      const MODOS_VISTA = [
-        { nombre: "Tamaño real", icono: "ph-duotone ph-frame-corners" },
-        { nombre: "Ajustar al ancho", icono: "ph-duotone ph-arrows-out-line-horizontal" },
-        { nombre: "Ajustar al alto", icono: "ph-duotone ph-arrows-out-line-vertical" },
-        { nombre: "Encajar todo", icono: "ph-duotone ph-arrows-out" },
-      ];
+      const MODOS_VISTA = Array.from(opcionesVista).map((boton) => {
+        const iconoElemento = boton.querySelector("i");
+        return {
+          nombre: boton.textContent.trim(),
+          icono: iconoElemento ? iconoElemento.className : "",
+        };
+      });
 
       textoVistaActivo.textContent = MODOS_VISTA[VISTA_POR_DEFECTO].nombre;
       iconoVistaActivo.className = MODOS_VISTA[VISTA_POR_DEFECTO].icono;
@@ -1051,35 +1157,42 @@
 
       btnVistaActivo.addEventListener("click", (e) => {
         e.stopPropagation();
-        grupoDescarga.classList.remove("abierto");
-        contenedorDesplegableCapas.classList.remove("abierto");
-
-        contenedorDesplegable.classList.toggle("abierto");
+        const estabaAbierto = contenedorDesplegable.classList.contains("abierto");
+        cerrarTodosLosDesplegables();
+        if (!estabaAbierto) {
+          contenedorDesplegable.classList.add("abierto");
+        }
       });
 
       botonDescargaFlecha.addEventListener("click", (e) => {
         e.stopPropagation();
         if (!botonDescargaFlecha.classList.contains("flecha-restringida")) {
-          contenedorDesplegable.classList.remove("abierto");
-          contenedorDesplegableCapas.classList.remove("abierto");
-
-          grupoDescarga.classList.toggle("abierto");
+          const estabaAbierto = grupoDescarga.classList.contains("abierto");
+          cerrarTodosLosDesplegables();
+          if (!estabaAbierto) {
+            grupoDescarga.classList.add("abierto");
+          }
         }
       });
 
       btnCapasActivo.addEventListener("click", (e) => {
         e.stopPropagation();
-        contenedorDesplegable.classList.remove("abierto");
-        grupoDescarga.classList.remove("abierto");
-
-        contenedorDesplegableCapas.classList.toggle("abierto");
+        const estabaAbierto = contenedorDesplegableCapas.classList.contains("abierto");
+        cerrarTodosLosDesplegables();
+        if (!estabaAbierto) {
+          contenedorDesplegableCapas.classList.add("abierto");
+        }
       });
 
-      document.addEventListener("click", () => {
-        if (typeof contenedorDesplegable !== "undefined") contenedorDesplegable.classList.remove("abierto");
+      function cerrarTodosLosDesplegables() {
+        if (typeof contenedorDesplegable !== "undefined") {
+          contenedorDesplegable.classList.remove("abierto");
+        }
         contenedorDesplegableCapas.classList.remove("abierto");
         grupoDescarga.classList.remove("abierto");
-      });
+      }
+
+      document.addEventListener("click", cerrarTodosLosDesplegables);
 
       opcionesVista.forEach((boton) => {
         boton.addEventListener("click", function () {
@@ -1111,6 +1224,17 @@
 
         contenedor.style.opacity = "0";
         contenedor.style.transform = "none";
+
+        contenedor.style.width = "0px";
+        contenedor.style.height = "0px";
+        if (marcoPrevisualizacion) {
+          marcoPrevisualizacion.style.width = "0px";
+          marcoPrevisualizacion.style.height = "0px";
+          try {
+            marcoPrevisualizacion.contentWindow.document.body.innerHTML = "";
+          } catch (e) {}
+        }
+
         btnVistaActivo.disabled = true;
         contenedorDesplegable.classList.remove("abierto");
 
@@ -1119,6 +1243,9 @@
         grupoDescarga.classList.remove("abierto");
 
         btnCalidad.disabled = true;
+
+        btnNavIzq.classList.remove("habilitada");
+        btnNavDer.classList.remove("habilitada");
 
         vistaActual = VISTA_POR_DEFECTO;
         opcionesVista.forEach((b) => b.classList.remove("seleccionada"));
@@ -1140,25 +1267,57 @@
         textoCapaActivo.textContent = "Esperando archivo…";
         contenedorDesplegableCapas.classList.remove("abierto");
         indiceSeleccionadoActual = 0;
+        esCargaInicial = true;
       }
 
       entradaHtml.addEventListener("change", (e) => {
         const archivo = e.target.files[0];
         if (!archivo) return;
 
+        validarYProcesarArchivo(archivo);
+
+        e.target.value = "";
+      });
+
+      function mostrarErrorEnCaja(mensaje) {
+        const cajaSubida = document.getElementById("zona-arrastre");
+        const etiquetaTexto = document.getElementById("nombre-archivo");
+        const icono = cajaSubida.querySelector("i");
+
+        etiquetaTexto.textContent = mensaje;
+        cajaSubida.classList.add("error-archivo");
+
+        if (icono) icono.style.color = "#f43f5e";
+
+        setTimeout(() => {
+          etiquetaTexto.textContent = TEXTO_SUBIDA_ORIGINAL;
+          cajaSubida.classList.remove("error-archivo");
+          if (icono) icono.style.color = "";
+        }, 1500);
+      }
+
+      function validarYProcesarArchivo(archivo) {
+        if (!archivo) return;
+
+        if (!(archivo.name.endsWith(".html") || archivo.name.endsWith(".htm"))) {
+          mostrarErrorEnCaja("Formato de archivo no válido");
+          return;
+        }
+
+        areaVisualizacion.classList.add("sin-transicion");
         resetearInterfaz();
 
         const cargadorArchivo = document.getElementById("cargador-archivo");
         cargadorArchivo.classList.add("activo");
         vistaVacia.classList.add("oculto");
 
-        setTimeout(async () => {
-          const panelControl = document.getElementById("panel-control");
-          document.getElementById("nombre-archivo").textContent = archivo.name;
+        contenedor.style.display = "block";
+        contenedor.style.opacity = "0";
+        contenedor.classList.remove("visible");
 
+        setTimeout(async () => {
+          document.getElementById("nombre-archivo").textContent = archivo.name;
           htmlOriginal = await archivo.text();
-          contenedor.style.display = "block";
-          contenedor.style.opacity = "0";
 
           const timeoutSeguridad = setTimeout(() => {
             if (elementosActuales.length === 0) {
@@ -1170,8 +1329,41 @@
             clearTimeout(timeoutSeguridad);
             analizarYCrearSelector();
           });
-          e.target.value = "";
         }, 100);
+      }
+
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((nombreEvento) => {
+        zonaArrastre.addEventListener(nombreEvento, (e) => e.preventDefault(), false);
+      });
+
+      ["dragenter", "dragover"].forEach((nombreEvento) => {
+        zonaArrastre.addEventListener(
+          nombreEvento,
+          () => {
+            zonaArrastre.classList.add("arrastrando");
+          },
+          false,
+        );
+      });
+
+      ["dragleave", "drop"].forEach((nombreEvento) => {
+        zonaArrastre.addEventListener(
+          nombreEvento,
+          () => {
+            zonaArrastre.classList.remove("arrastrando");
+          },
+          false,
+        );
+      });
+
+      zonaArrastre.addEventListener("drop", (e) => {
+        const dt = e.dataTransfer;
+        const archivos = dt.files;
+
+        if (archivos.length > 0) {
+          const archivo = archivos[0];
+          validarYProcesarArchivo(archivo);
+        }
       });
 
       function escribirEnIframe(html, alTerminar) {
@@ -1213,6 +1405,49 @@
         marcoPrevisualizacion = nuevoIframe;
       }
 
+      function cambiarCapaPorIndice(idx) {
+        if (elementosActuales.length === 0) return;
+
+        if (idx < 0 || idx >= elementosActuales.length) return;
+
+        indiceSeleccionadoActual = idx;
+
+        const opciones = menuCapas.querySelectorAll(".opcion-capa");
+        opciones.forEach((b) => b.classList.remove("seleccionada"));
+
+        const opcionActiva = menuCapas.querySelector(`.opcion-capa[data-idx="${idx}"]`);
+        if (opcionActiva) {
+          opcionActiva.classList.add("seleccionada");
+          textoCapaActivo.textContent = opcionActiva.textContent;
+        }
+
+        actualizarVista(idx);
+
+        actualizarVisibilidadFlechas();
+      }
+
+      function actualizarVisibilidadFlechas() {
+        if (elementosActuales.length <= 1) {
+          btnNavIzq.classList.remove("habilitada");
+          btnNavDer.classList.remove("habilitada");
+          return;
+        }
+
+        btnNavIzq.classList.add("habilitada");
+        btnNavDer.classList.add("habilitada");
+
+        if (indiceSeleccionadoActual === 0) {
+          btnNavIzq.disabled = true;
+          btnNavDer.disabled = false;
+        } else if (indiceSeleccionadoActual === elementosActuales.length - 1) {
+          btnNavIzq.disabled = false;
+          btnNavDer.disabled = true;
+        } else {
+          btnNavIzq.disabled = false;
+          btnNavDer.disabled = false;
+        }
+      }
+
       function analizarYCrearSelector() {
         const doc = marcoPrevisualizacion.contentWindow.document;
         const capas = Array.from(doc.body.children).filter((el) => el.tagName === "DIV");
@@ -1237,17 +1472,13 @@
 
             botonOpcion.addEventListener("click", function () {
               const idx = parseInt(this.dataset.idx);
-              indiceSeleccionadoActual = idx;
-
-              document.querySelectorAll(".opcion-capa").forEach((b) => b.classList.remove("seleccionada"));
-              this.classList.add("seleccionada");
-
-              textoCapaActivo.textContent = textoVisual;
-              actualizarVista(idx);
+              cambiarCapaPorIndice(idx);
             });
 
             menuCapas.appendChild(botonOpcion);
           });
+
+          actualizarVisibilidadFlechas();
 
           if (menuCapas.scrollHeight > menuCapas.clientHeight) {
             menuCapas.classList.add("tiene-scroll");
@@ -1274,6 +1505,18 @@
           mostrarMensajeError("No se encontraron elementos <div> válidos en el body del HTML.");
         }
       }
+
+      btnNavIzq.addEventListener("click", (e) => {
+        e.stopPropagation();
+        cerrarTodosLosDesplegables();
+        cambiarCapaPorIndice(indiceSeleccionadoActual - 1);
+      });
+
+      btnNavDer.addEventListener("click", (e) => {
+        e.stopPropagation();
+        cerrarTodosLosDesplegables();
+        cambiarCapaPorIndice(indiceSeleccionadoActual + 1);
+      });
 
       function configurarMenuDescarga(cantidadCapas) {
         dropdownDescarga.innerHTML = "";
@@ -1332,8 +1575,18 @@
 
         const docIframe = marcoPrevisualizacion.contentWindow.document;
 
-        const nombreBase = docIframe.title.trim() || "diseno_completo_paginado";
+        let nombreBase = docIframe.title.trim();
 
+        if (nombreBase) {
+          nombreBase = nombreBase
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-_]/g, "");
+        } else {
+          nombreBase = "diseno_completo_paginado";
+        }
         actualizarEstadoBoton("cargando", "pdf");
 
         const tituloOriginalApp = document.title;
@@ -1411,18 +1664,7 @@
           docImpresion.head.appendChild(estiloImpresionRegulada);
 
           docImpresion.close();
-
-          setTimeout(() => {
-            iframeImpresion.contentWindow.focus();
-            iframeImpresion.contentWindow.print();
-
-            setTimeout(() => {
-              iframeImpresion.remove();
-              document.title = tituloOriginalApp;
-            }, 1000);
-
-            actualizarEstadoBoton("exito", "pdf");
-          }, 600);
+          lanzarImpresionYLimpiar(iframeImpresion, tituloOriginalApp, 500);
         } catch (err) {
           console.error("Error al procesar el PDF multipágina con dimensiones dinámicas:", err);
           document.title = tituloOriginalApp;
@@ -1447,41 +1689,52 @@
       function actualizarVista(indice) {
         if (elementosActuales.length === 0) return;
 
-        areaVisualizacion.classList.add("sin-transicion");
-        contenedor.classList.remove("visible");
-        contenedor.style.display = "none";
+        if (esCargaInicial) {
+          procesarCambioDeCapa(indice);
+        } else {
+          if (contenedor.classList.contains("visible")) {
+            contenedor.classList.remove("visible");
+            setTimeout(() => {
+              procesarCambioDeCapa(indice);
+            }, 100);
+          } else {
+            procesarCambioDeCapa(indice);
+          }
+        }
+      }
 
+      function procesarCambioDeCapa(indice) {
         elementosActuales.forEach((el) => el.classList.remove("__oculto"));
         ajustarTamanoIframe(4000, 4000);
 
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            const el = elementosActuales[indice];
-            const dims = obtenerDimensionesElemento(el);
-            const w = dims.w;
-            const h = dims.h;
+        const el = elementosActuales[indice];
+        const dims = obtenerDimensionesElemento(el);
+        const w = dims.w;
+        const h = dims.h;
 
-            elementosActuales.forEach((otro, i) => {
-              if (i !== indice) otro.classList.add("__oculto");
-            });
-
-            ajustarTamanoIframe(w, h);
-            contenedor.style.display = "block";
-
-            el.dataset.exportW = w;
-            el.dataset.exportH = h;
-            infoAncho.textContent = w + "px";
-            infoAlto.textContent = h + "px";
-            infoExport.textContent = `${w * ratioActual} × ${h * ratioActual}px`;
-
-            aplicarEscalaYScrolls();
-
-            requestAnimationFrame(() => {
-              contenedor.classList.add("visible");
-              areaVisualizacion.classList.remove("sin-transicion");
-            });
-          });
+        elementosActuales.forEach((otro, i) => {
+          if (i !== indice) otro.classList.add("__oculto");
         });
+
+        ajustarTamanoIframe(w, h);
+        contenedor.style.display = "block";
+
+        el.dataset.exportW = w;
+        el.dataset.exportH = h;
+        infoAncho.textContent = w + "px";
+        infoAlto.textContent = h + "px";
+        infoExport.textContent = `${w * ratioActual} × ${h * ratioActual}px`;
+
+        aplicarEscalaYScrolls();
+
+        void contenedor.offsetWidth;
+
+        if (esCargaInicial) {
+          areaVisualizacion.classList.remove("sin-transicion");
+          esCargaInicial = false;
+        }
+
+        contenedor.classList.add("visible");
       }
 
       function ajustarTamanoIframe(w, h) {
@@ -1553,22 +1806,23 @@
           grupoDescarga.classList.add("exito");
           grupoDescarga.classList.add("deshabilitado");
 
-          if (tipoOperacion === "masivo") {
-            icono.className = "ph-duotone ph-confetti";
-            texto.textContent = "Imágenes descargadas";
-          } else if (tipoOperacion === "pdf") {
-            icono.className = "ph-duotone ph-confetti";
-            texto.textContent = "PDF descargado";
-          } else {
-            icono.className = "ph-duotone ph-confetti";
-            texto.textContent = "Imagen descargada";
-          }
+          icono.className = ICONO_EXITO;
+
+          const mensajesExito = {
+            masivo: "Imágenes descargadas",
+            pdf: "PDF descargado",
+            imagen: "Imagen descargada",
+          };
+
+          texto.textContent = mensajesExito[tipoOperacion] || mensajesExito.imagen;
+
           restaurarBoton();
         } else if (estado === "error") {
           grupoDescarga.classList.remove("boton-cargando");
           grupoDescarga.classList.add("error");
           grupoDescarga.classList.add("deshabilitado");
-          icono.className = "ph-duotone ph-seal-warning";
+
+          icono.className = ICONO_ERROR;
           texto.textContent = "Error al descargar";
           restaurarBoton();
         }
@@ -1576,8 +1830,10 @@
         function restaurarBoton() {
           setTimeout(() => {
             grupoDescarga.classList.remove("exito", "error", "deshabilitado", "boton-cargando");
-            icono.className = "ph-duotone ph-image-square";
-            texto.textContent = "Descargar imagen";
+            if (ICONO_BOTON_ORIGINAL) {
+              icono.className = ICONO_BOTON_ORIGINAL;
+            }
+            texto.textContent = TEXTO_BOTON_ORIGINAL;
           }, 1500);
         }
       }
@@ -1595,6 +1851,7 @@
 
       botonDescarga.addEventListener("click", (e) => {
         e.stopPropagation();
+        cerrarTodosLosDesplegables();
         const indice = indiceSeleccionadoActual;
         const objetivo = elementosActuales[indice];
 
@@ -1654,6 +1911,20 @@
         });
       }
 
+      function lanzarImpresionYLimpiar(iframe, tituloOriginal, tiempoEspera = 500) {
+        setTimeout(() => {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+
+          setTimeout(() => {
+            iframe.remove();
+            document.title = tituloOriginal;
+          }, 1000);
+
+          actualizarEstadoBoton("exito", "pdf");
+        }, tiempoEspera);
+      }
+
       function ejecutarExportacionPdf() {
         const indice = indiceSeleccionadoActual;
         const objetivo = elementosActuales[indice];
@@ -1709,19 +1980,9 @@
           `;
           docImpresion.head.appendChild(estiloImpresionRegulada);
           docImpresion.body.appendChild(contenidoClonado);
+
           docImpresion.close();
-
-          setTimeout(() => {
-            iframeImpresion.contentWindow.focus();
-            iframeImpresion.contentWindow.print();
-
-            setTimeout(() => {
-              iframeImpresion.remove();
-              document.title = tituloOriginalApp;
-            }, 1000);
-
-            actualizarEstadoBoton("exito", "pdf");
-          }, 500);
+          lanzarImpresionYLimpiar(iframeImpresion, tituloOriginalApp, 500);
         } catch (err) {
           console.error("Fallo durante la inicialización del motor PDF:", err);
           document.title = tituloOriginalApp;
