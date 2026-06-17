@@ -1,0 +1,1292 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cuestionario de Legislación y Gestión Minera</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Plus Jakarta Sans", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#f5f3ff",
+                100: "#ede9fe",
+                500: "#6366f1" /* Indigo corporativo */,
+                600: "#4f46e5",
+                700: "#4338ca",
+                accent: "#ff7e5f" /* Coral de acento */,
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      .fade-in-up {
+        animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-fadeIn {
+        animation: fadeIn 0.4s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Expansión dinámica para la caja de pistas */
+      .expand-hint {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition:
+          max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+          opacity 0.3s ease-out,
+          margin-bottom 0.3s ease;
+      }
+      .expand-hint.active {
+        max-height: 200px;
+        opacity: 1;
+        margin-bottom: 1.5rem;
+      }
+
+      /* Caída de confeti decorativo */
+      .confetti-slow {
+        animation: confettiFall 4.5s linear forwards;
+      }
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(-20px) rotate(0deg);
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(105vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      /* Anillo de progreso circular de la dona final */
+      .progress-ring {
+        transition: stroke-dashoffset 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 min-h-screen flex items-center justify-center p-3 sm:p-6 font-sans antialiased text-slate-800 selection:bg-brand-100">
+    <div class="w-full max-w-2xl bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden relative fade-in-up">
+      <div id="review-banner" class="hidden bg-amber-50 border-b border-amber-200/50 px-6 py-3.5 flex justify-between items-center text-amber-900">
+        <span class="flex items-center gap-2 text-sm font-bold">
+          <i class="ph-fill ph-eyeglasses text-xl text-amber-600"></i>
+          Modo Revisión Activo
+        </span>
+        <button onclick="exitReview()" class="text-xs font-extrabold uppercase tracking-wider bg-amber-600 text-white px-3 py-1.5 rounded-lg hover:bg-amber-700 active:scale-95 transition-all shadow-sm">Volver al Reporte</button>
+      </div>
+
+      <!-- PANTALLA DE PORTADA / BIENVENIDA -->
+      <div id="welcome-screen" class="p-8 md:p-12 text-center">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-tr from-brand-500 to-indigo-400 text-white rounded-2xl shadow-lg shadow-indigo-100 mb-6 transform transition-transform hover:scale-105 duration-300">
+          <i class="ph-fill ph-gavel text-4xl"></i>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-brand-600 to-brand-accent bg-clip-text text-transparent leading-tight text-balance">Legislación y Gestión Minera</h1>
+        <p class="mt-4 text-slate-500 text-base md:text-lg max-w-md mx-auto leading-relaxed text-balance">Pon a prueba tus competencias con este simulador avanzado de legislación minera peruana.</p>
+
+        <!-- Lista de Temas Abordados -->
+        <div class="mt-8 text-left bg-slate-50 rounded-2xl p-6 border border-slate-100 transition-all hover:border-slate-200">
+          <h3 class="text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2"><i class="ph-bold ph-list-checks text-brand-500 text-lg"></i> Temas que vas a repasar:</h3>
+          <ul id="covered-topics-list" class="space-y-3 text-sm text-slate-600 font-semibold">
+            <!-- Cargados dinámicamente -->
+          </ul>
+        </div>
+
+        <!-- Botón de Inicio -->
+        <button onclick="startQuiz()" class="mt-10 w-full sm:w-auto px-10 py-4 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold rounded-2xl shadow-lg shadow-brand-200 transition-all duration-300 flex items-center justify-center gap-3 mx-auto group">
+          ¡Empezar cuestionario!
+          <i class="ph-bold ph-arrow-right text-lg transform group-hover:translate-x-1 transition-transform"></i>
+        </button>
+      </div>
+
+      <!-- PANTALLA DEL CUESTIONARIO -->
+      <div id="quiz-screen" class="hidden">
+        <div id="progress-segments" class="flex gap-1 w-full px-6 pt-5 pb-3">
+          <!-- Se inyectan dinámicamente los "pills" según el total de preguntas -->
+        </div>
+
+        <div class="px-6 pb-6 md:px-8 md:pb-8">
+          <!-- Indicadores de Pregunta y Botón de Pista -->
+          <div class="flex justify-between items-center mb-6">
+            <span id="question-index-badge" class="px-4 py-1.5 bg-brand-50 text-brand-700 text-xs font-extrabold uppercase tracking-wider rounded-full shadow-sm"> Pregunta 1 de 25 </span>
+            <button onclick="toggleHint()" id="hint-button" class="flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-amber-500 transition-colors group"><i class="ph-fill ph-lightbulb text-lg group-hover:animate-pulse"></i> Ver pista</button>
+          </div>
+
+          <!-- Caja de la Pista (Animada dinámicamente) -->
+          <div id="hint-box" class="expand-hint bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-2xl p-4 text-sm text-amber-900 flex gap-3 items-start shadow-sm">
+            <i class="ph-fill ph-magic-wand text-amber-500 text-xl mt-0.5 shrink-0"></i>
+            <div>
+              <span class="font-extrabold block mb-1 text-amber-700 text-xs uppercase tracking-wider">Pista sugerida</span>
+              <p id="hint-text" class="leading-relaxed opacity-95"></p>
+            </div>
+          </div>
+
+          <!-- Enunciado de la Pregunta -->
+          <h2 id="question-text" class="text-lg md:text-xl font-bold text-slate-800 leading-snug mb-6">
+            <!-- Cargado dinámicamente -->
+          </h2>
+
+          <div id="options-container" class="space-y-4">
+            <!-- Cargados dinámicamente -->
+          </div>
+
+          <!-- Navegación Inferior -->
+          <div class="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center gap-4">
+            <button id="prev-button" onclick="prevQuestion()" class="hidden px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all flex items-center justify-center gap-2 border border-slate-200/60 shadow-sm active:scale-95">
+              <i class="ph-bold ph-caret-left text-lg"></i>
+              Anterior
+            </button>
+
+            <button id="next-button" onclick="nextQuestion()" class="w-full sm:w-auto px-8 py-4 bg-slate-100 text-slate-400 font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 ml-auto">
+              Siguiente
+              <i class="ph-bold ph-caret-right text-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANTALLA DE RESULTADOS -->
+      <div id="result-screen" class="hidden p-8 md:p-12 text-center relative overflow-hidden animate-fadeIn">
+        <!-- Contenedor para confeti animado -->
+        <div id="confeti-container" class="absolute inset-0 pointer-events-none z-50 hidden"></div>
+
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full mb-6 relative shadow-inner">
+          <i class="ph-fill ph-trophy text-4xl drop-shadow-md"></i>
+        </div>
+
+        <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">¡Cuestionario completado!</h2>
+        <p class="text-slate-500 mt-2 font-medium text-sm">Aquí tienes tu reporte de desempeño</p>
+
+        <!-- Círculo de Puntuación de Dona con Resumen Estadístico al lado -->
+        <div class="my-8 flex flex-col sm:flex-row items-center justify-center gap-8 md:gap-12">
+          <!-- Dona Circular -->
+          <div class="relative w-44 h-44 flex items-center justify-center shrink-0">
+            <!-- SVG para el gráfico de dona circular -->
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+              <!-- Círculo de fondo -->
+              <circle cx="50" cy="50" r="40" fill="none" class="stroke-slate-100" stroke-width="8"></circle>
+              <!-- Círculo de progreso dinámico -->
+              <circle id="score-circle-path" cx="50" cy="50" r="40" fill="none" class="stroke-brand-500 progress-ring" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round"></circle>
+            </svg>
+
+            <!-- Textos internos de la Dona -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <!-- Línea 1: Aciertos / Total -->
+              <span id="score-fraction" class="text-xs font-black text-slate-400 tracking-widest uppercase mb-0.5">0 / 0</span>
+              <!-- Línea 2: Porcentaje de aciertos -->
+              <span id="final-score" class="text-3xl md:text-4xl font-black text-slate-800 tracking-tighter">0%</span>
+            </div>
+          </div>
+
+          <!-- Resumen Estadístico Al Lado -->
+          <div class="flex flex-col gap-3 text-left border-t sm:border-t-0 sm:border-l border-slate-100 pt-5 sm:pt-0 sm:pl-8 w-full sm:w-auto">
+            <h4 class="text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-1">Resumen</h4>
+            <div class="flex items-center gap-2.5 text-emerald-600 font-bold text-sm">
+              <i class="ph-bold ph-check-circle text-lg"></i>
+              <span>Correctas: <span id="stats-correct" class="font-extrabold text-slate-800">0</span></span>
+            </div>
+            <div class="flex items-center gap-2.5 text-rose-500 font-bold text-sm">
+              <i class="ph-bold ph-x-circle text-lg"></i>
+              <span>Incorrectas: <span id="stats-incorrect" class="font-extrabold text-slate-800">0</span></span>
+            </div>
+            <div id="stats-omitted-container" class="flex items-center gap-2.5 text-amber-500 font-bold text-sm">
+              <i class="ph-bold ph-minus-circle text-lg"></i>
+              <span>Omitidas: <span id="stats-omitted" class="font-extrabold text-slate-800">0</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Temas sugeridos de profundización -->
+        <div class="text-left bg-indigo-50/40 rounded-2xl p-5 border border-indigo-100/60 mb-8">
+          <h3 class="text-xs font-extrabold uppercase tracking-widest text-indigo-900/60 mb-3 flex items-center gap-2"><i class="ph-fill ph-graduation-cap text-indigo-500 text-xl"></i> Temas recomendados para seguir estudiando:</h3>
+          <ul id="suggested-topics-list" class="space-y-2.5 text-sm text-indigo-950/80 font-semibold">
+            <!-- Cargados dinámicamente -->
+          </ul>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <!-- Botón de Revisión del Cuestionario -->
+          <button onclick="enterReviewMode()" class="w-full sm:w-auto px-6 py-3.5 bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-95 shadow-sm border border-brand-200">
+            <i class="ph-bold ph-eyeglasses text-xl"></i>
+            Revisar cuestionario
+          </button>
+
+          <!-- Botón de Reiniciar -->
+          <button onclick="restartQuiz()" class="w-full sm:w-auto px-6 py-3.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-95 shadow-sm">
+            <i class="ph-bold ph-arrow-counter-clockwise text-xl"></i>
+            Intentar de nuevo
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const quizData = {
+        quiz: [
+          {
+            question: "¿Cuál es la naturaleza jurídica fundamental del acto por el cual el Estado otorga derechos mineros a particulares en el Perú?",
+            answerOptions: [
+              {
+                text: "Un contrato privado de compraventa de recursos minerales.",
+                isCorrect: false,
+                rationale: "La minería en el Perú se rige por el derecho público, donde el Estado no vende la propiedad, sino que otorga facultades administrativas.",
+              },
+              {
+                text: "Un acto administrativo que entrega facultades exclusivas de exploración y explotación.",
+                isCorrect: true,
+                rationale: "La concesión se define como un acto de la administración que otorga derechos condicionados al cumplimiento de obligaciones legales.",
+              },
+              {
+                text: "Una licencia comercial de libre disposición e irrestricta.",
+                isCorrect: false,
+                rationale: "Aunque otorga privilegios, estos no son irrestrictos, ya que están condicionados al cumplimiento estricto de la ley.",
+              },
+              {
+                text: "Un título de propiedad absoluto sobre el terreno superficial.",
+                isCorrect: false,
+                rationale: "El sistema peruano separa legalmente la propiedad del suelo de la del subsuelo, por lo que el título minero no otorga el suelo.",
+              },
+            ],
+            hint: "Considere la relación entre la administración pública y el inversionista privado en sectores estratégicos.",
+          },
+          {
+            question: "Bajo el fundamento dualista del sistema jurídico peruano, ¿qué relación existe entre el predio superficial y la concesión minera?",
+            answerOptions: [
+              {
+                text: "La concesión minera es un bien inmueble distinto y separado del suelo.",
+                isCorrect: true,
+                rationale: "El ordenamiento consagra una disociación estratégica donde el suelo y el subsuelo se consideran unidades jurídicas independientes.",
+              },
+              {
+                text: "La titularidad de los minerales otorga automáticamente el derecho de propiedad sobre el suelo.",
+                isCorrect: false,
+                rationale: "Este es un error común; el acceso al suelo debe gestionarse de forma independiente a pesar de tener el derecho sobre los minerales.",
+              },
+              {
+                text: "El dueño del terreno superficial es, por ley, el dueño de los recursos del subsuelo.",
+                isCorrect: false,
+                rationale: "En el Perú, los recursos naturales son patrimonio de la Nación, no del dueño del predio superficial.",
+              },
+              {
+                text: "Ambos derechos se fusionan en una sola partida registral tras la titulación.",
+                isCorrect: false,
+                rationale: "Mantienen naturalezas jurídicas diferentes y requieren gestiones separadas para su coexistencia.",
+              },
+            ],
+            hint: "Piense en el concepto de disociación estratégica de propiedades.",
+          },
+          {
+            question: "Si una empresa desea operar una planta de refinación industrial o de preparación mecánica de minerales, ¿qué tipo de concesión debe tramitar obligatoriamente?",
+            answerOptions: [
+              {
+                text: "Concesión de labor general.",
+                isCorrect: false,
+                rationale: "Esta categoría se limita a servicios auxiliares como ventilación o desagüe para múltiples concesionarios.",
+              },
+              {
+                text: "Concesión de beneficio.",
+                isCorrect: true,
+                rationale: "Esta concesión es el requisito indispensable para cualquier proceso de transformación física, química o físico-química del mineral.",
+              },
+              {
+                text: "Concesión de transporte minero.",
+                isCorrect: false,
+                rationale: "Esta se enfoca exclusivamente en el traslado masivo de minerales mediante sistemas como fajas o mineroductos.",
+              },
+              {
+                text: "Concesión minera estándar.",
+                isCorrect: false,
+                rationale: "La estándar faculta la exploración y explotación, pero la transformación industrial requiere un permiso técnico específico adicional.",
+              },
+            ],
+            hint: "Identifique el permiso relacionado con la transformación y metalurgia del mineral.",
+          },
+          {
+            question: "¿Cuál es la función principal de una concesión de labor general dentro del ecosistema minero?",
+            answerOptions: [
+              {
+                text: "Extraer mineral de vetas que cruzan múltiples propiedades.",
+                isCorrect: false,
+                rationale: "La labor general no faculta la extracción de mineral, sino la prestación de servicios de soporte.",
+              },
+              {
+                text: "Prestar servicios auxiliares como ventilación o desagüe a dos o más concesiones de diferentes titulares.",
+                isCorrect: true,
+                rationale: "Tiene una naturaleza sistémica y colaborativa, requiriendo la aprobación de una junta de concesionarios.",
+              },
+              {
+                text: "Garantizar el transporte de concentrados hacia los puertos de exportación.",
+                isCorrect: false,
+                rationale: "Esa función corresponde a la concesión de transporte minero, no a la de labor general.",
+              },
+              {
+                text: "Gestionar el cierre de minas de forma colectiva en una cuenca.",
+                isCorrect: false,
+                rationale: "El plan de cierre es una obligación ambiental específica que no define la tipología de labor general.",
+              },
+            ],
+            hint: "Piense en las necesidades operativas comunes bajo tierra que requieren trabajo en equipo.",
+          },
+          {
+            question: "¿Qué actividad minera se considera libre en el territorio peruano (salvo áreas excluidas) y no requiere un título de concesión?",
+            answerOptions: [
+              {
+                text: "Explotación de pequeña escala.",
+                isCorrect: false,
+                rationale: "Toda explotación, independientemente de su escala, requiere una concesión y permisos ambientales.",
+              },
+              {
+                text: "El cateo y la prospección.",
+                isCorrect: true,
+                rationale: "Estas actividades se consideran búsqueda elemental y técnica, permitiéndose libremente para fomentar el descubrimiento de recursos.",
+              },
+              {
+                text: "La construcción de plantas de beneficio.",
+                isCorrect: false,
+                rationale: "La infraestructura de transformación requiere una concesión de beneficio debido a su alto impacto técnico.",
+              },
+              {
+                text: "El transporte por mineroductos.",
+                isCorrect: false,
+                rationale: "El transporte masivo requiere una concesión específica debido al uso de infraestructura permanente.",
+              },
+            ],
+            hint: "Se trata de las etapas iniciales de búsqueda superficial de minerales.",
+          },
+          {
+            question: "Al formular un petitorio minero, ¿cuáles son los límites de extensión superficial permitidos por ley para cada solicitud?",
+            answerOptions: [
+              {
+                text: "Entre 10 y 500 hectáreas.",
+                isCorrect: false,
+                rationale: "Este rango es incorrecto y no se ajusta a la cuadrícula minera establecida para el régimen general.",
+              },
+              {
+                text: "Entre 100 y 1000 hectáreas.",
+                isCorrect: true,
+                rationale: "La ley establece este rango mínimo y máximo por petitorio, debiendo encajar estrictamente en la cuadrícula del sistema de coordenadas.",
+              },
+              {
+                text: "Mínimo 500 hectáreas sin límite máximo.",
+                isCorrect: false,
+                rationale: "Existe un límite máximo legal de 1000 hectáreas para evitar el acaparamiento y asegurar la gestión por cuadrículas.",
+              },
+              {
+                text: "Cualquier extensión siempre que no se superponga con otros derechos.",
+                isCorrect: false,
+                rationale: "Además de la no superposición, existen límites técnicos de extensión mínima y máxima por unidad de trámite.",
+              },
+            ],
+            hint: "Considere la unidad de medida estándar de la cuadrícula minera en el sistema UTM.",
+          },
+          {
+            question: "En el sistema de coordenadas oficial para minería en el Perú, ¿qué sistema y zonas se deben utilizar obligatoriamente?",
+            answerOptions: [
+              {
+                text: "Sistema PSAD56, zonas 17, 18 y 19.",
+                isCorrect: false,
+                rationale: "El PSAD56 es un sistema antiguo que ha sido reemplazado por estándares globales más precisos.",
+              },
+              {
+                text: "Sistema UTM WGS84, zonas 17, 18 y 19.",
+                isCorrect: true,
+                rationale: "Este es el estándar cartográfico y geodésico actual que garantiza la precisión necesaria para evitar superposiciones.",
+              },
+              {
+                text: "Sistema Geográfico Decimal, zonas Norte y Sur.",
+                isCorrect: false,
+                rationale: "El sistema administrativo requiere coordenadas proyectadas UTM para la correcta formulación de la cuadrícula minera.",
+              },
+              {
+                text: "Sistema Local de cada Gobierno Regional.",
+                isCorrect: false,
+                rationale: "El catastro minero es nacional y unificado para garantizar la seguridad jurídica en todo el territorio.",
+              },
+            ],
+            hint: "Busque el acrónimo del estándar global de coordenadas geográficas.",
+          },
+          {
+            question: "¿Cuál es la consecuencia inmediata de una superposición de coordenadas al presentar un petitorio minero?",
+            answerOptions: [
+              {
+                text: "Se otorga un plazo de 15 días para corregir el error.",
+                isCorrect: false,
+                rationale: "El sistema técnico-jurídico no admite este tipo de errores de fondo al momento de la presentación inicial.",
+              },
+              {
+                text: "El rechazo inmediato del petitorio.",
+                isCorrect: true,
+                rationale: "La precisión debe ser absoluta; cualquier invasión a derechos preexistentes anula la solicitud sin posibilidad de subsanación.",
+              },
+              {
+                text: "La autoridad reduce automáticamente el área a la parte libre.",
+                isCorrect: false,
+                rationale: "La formulación debe ser exacta por parte del solicitante; la autoridad no rediseña el petitorio de oficio.",
+              },
+              {
+                text: "Se inicia un proceso de conciliación con el titular afectado.",
+                isCorrect: false,
+                rationale: "La prioridad del derecho se basa en la fecha y hora de presentación, no en negociaciones posteriores.",
+              },
+            ],
+            hint: "La normativa minera exige precisión absoluta y castiga severamente la falta de diligencia técnica.",
+          },
+          {
+            question: "Dentro de la cronología del procedimiento, ¿cuánto tiempo tiene el solicitante para publicar los avisos en el diario oficial tras ser notificado?",
+            answerOptions: [
+              {
+                text: "7 días hábiles.",
+                isCorrect: false,
+                rationale: "Este plazo corresponde a la autoridad para emitir informes, no al administrado para las publicaciones.",
+              },
+              {
+                text: "30 días hábiles.",
+                isCorrect: true,
+                rationale: "Es la responsabilidad del solicitante difundir el petitorio en el diario oficial y el de mayor circulación regional en este plazo.",
+              },
+              {
+                text: "60 días calendario.",
+                isCorrect: false,
+                rationale: "Este es el tiempo de la ventana de oposición para terceros, no el plazo de publicación de los edictos.",
+              },
+              {
+                text: "15 días naturales.",
+                isCorrect: false,
+                rationale: "El plazo legal es más extenso para permitir la gestión logística de los anuncios en prensa regional y nacional.",
+              },
+            ],
+            hint: "Es un periodo de aproximadamente un mes contado en días de labor administrativa.",
+          },
+          {
+            question: "¿Qué entidad actúa como el órgano supremo y de última instancia administrativa para resolver controversias sobre titulación minera?",
+            answerOptions: [
+              {
+                text: "El TASEM (Tribunal de Apelaciones de Sanciones en Energía y Minas).",
+                isCorrect: false,
+                rationale: "El TASEM tiene una jurisdicción estrictamente punitiva y sancionadora, no de titulación.",
+              },
+              {
+                text: "El Consejo de Minería.",
+                isCorrect: true,
+                rationale: "Esta es la autoridad máxima encargada de resolver apelaciones y conflictos relacionados con los derechos y la titulación.",
+              },
+              {
+                text: "La Corte Suprema de Justicia.",
+                isCorrect: false,
+                rationale: "La Corte Suprema es parte de la vía judicial, la cual solo se abre tras agotar la vía administrativa.",
+              },
+              {
+                text: "El Ministerio de Energía y Minas.",
+                isCorrect: false,
+                rationale: "Aunque el Consejo está vinculado al sector, actúa como un órgano colegiado con funciones resolutivas de última instancia administrativa.",
+              },
+            ],
+            hint: "Diferencie entre la entidad que otorga derechos y la que sanciona infracciones.",
+          },
+          {
+            question: "¿Por qué el silencio administrativo para un Estudio de Impacto Ambiental (EIA) detallado es de naturaleza negativa?",
+            answerOptions: [
+              {
+                text: "Para agilizar la inversión privada mediante aprobaciones automáticas.",
+                isCorrect: false,
+                rationale: "El silencio positivo agilizaría el proceso pero pondría en riesgo la protección ambiental.",
+              },
+              {
+                text: "Porque la ley prioriza la seguridad ambiental sobre el apuro del proyecto.",
+                isCorrect: true,
+                rationale: "En temas de alto impacto ambiental, la falta de respuesta del Estado no puede interpretarse como una aprobación para evitar daños irreparables.",
+              },
+              {
+                text: "Debido a la falta de personal técnico en el SENACE.",
+                isCorrect: false,
+                rationale: "Aunque la carga administrativa influye, la razón legal es la protección del interés público y el entorno.",
+              },
+              {
+                text: "Porque los proyectos mineros siempre son rechazados inicialmente.",
+                isCorrect: false,
+                rationale: "El silencio negativo no es un juicio sobre el proyecto, sino una salvaguarda procedimental.",
+              },
+            ],
+            hint: "Considere qué valor protege el Estado cuando no emite un pronunciamiento a tiempo en temas sensibles.",
+          },
+          {
+            question: "¿En qué etapa del proyecto minero se vuelve obligatorio presentar un plan de cierre de minas?",
+            answerOptions: [
+              {
+                text: "Desde la etapa inicial de cateo y prospección.",
+                isCorrect: false,
+                rationale: "Estas actividades son libres y de bajo impacto, por lo que no requieren planes de cierre complejos.",
+              },
+              {
+                text: "Únicamente en las etapas de explotación y beneficio.",
+                isCorrect: true,
+                rationale: "Esta distinción permite a los inversores no inmovilizar capital excesivo durante la exploración, cuando el riesgo geológico es alto.",
+              },
+              {
+                text: "Al momento de solicitar el petitorio minero.",
+                isCorrect: false,
+                rationale: "El petitorio es un acto administrativo de titulación; los planes operativos y ambientales vienen después.",
+              },
+              {
+                text: "Antes de iniciar la exploración inicial.",
+                isCorrect: false,
+                rationale: "La exploración requiere certificaciones ambientales, pero el plan de cierre integral se exige para fases de producción.",
+              },
+            ],
+            hint: "Piense en qué fase se generan los mayores pasivos ambientales que requieren remediación futura.",
+          },
+          {
+            question: "Según la evolución del sector, ¿qué caracteriza al paradigma moderno de la 'Licencia Social'?",
+            answerOptions: [
+              {
+                text: "La entrega de regalos y bienes a corto plazo para evitar protestas.",
+                isCorrect: false,
+                rationale: "Ese es el enfoque transaccional obsoleto que no genera desarrollo sostenible ni estabilidad.",
+              },
+              {
+                text: "Programas de desarrollo a largo plazo, como becas académicas, que fomentan la movilidad social.",
+                isCorrect: true,
+                rationale: "La visión moderna busca que la comunidad vea a la empresa como un socio estratégico para su progreso real.",
+              },
+              {
+                text: "Un pago único en efectivo a los líderes comunitarios.",
+                isCorrect: false,
+                rationale: "Esto no constituye una licencia social legítima y suele derivar en conflictos futuros.",
+              },
+              {
+                text: "La firma de un documento notarial que garantiza el apoyo perpetuo de la población.",
+                isCorrect: false,
+                rationale: "La licencia social es dinámica y debe gestionarse día a día; no es un 'cheque en blanco'.",
+              },
+            ],
+            hint: "Piense en proyectos que transforman la vida de las personas más allá de lo económico inmediato.",
+          },
+          {
+            question: "¿Cuál es la consecuencia jurídica de no pagar el derecho de vigencia de una concesión minera por dos años consecutivos?",
+            answerOptions: [
+              {
+                text: "Una multa equivalente al doble del monto adeudado.",
+                isCorrect: false,
+                rationale: "Aunque existen multas en otros casos, el impago prolongado del derecho de vigencia tiene una sanción terminal.",
+              },
+              {
+                text: "La caducidad automática de la concesión.",
+                isCorrect: true,
+                rationale: "El incumplimiento de esta obligación financiera básica resulta en la pérdida total e irreversible del activo minero.",
+              },
+              {
+                text: "La suspensión temporal de las actividades de exploración.",
+                isCorrect: false,
+                rationale: "La ley no suspende, sino que extingue el derecho para permitir que el área sea aprovechada por otros.",
+              },
+              {
+                text: "La transferencia obligatoria de la concesión a un tercero.",
+                isCorrect: false,
+                rationale: "El área revierte al Estado y entra en un proceso de libre denunciabilidad.",
+              },
+            ],
+            hint: "Es la sanción más temida por los operadores mineros relacionada con el mantenimiento del título.",
+          },
+          {
+            question: "¿En qué meses del año se abren las ventanas estratégicas para solicitar áreas que han sido revertidas al Estado por caducidad (libre denunciabilidad)?",
+            answerOptions: [
+              {
+                text: "Enero, mayo y agosto.",
+                isCorrect: false,
+                rationale: "Estos meses no coinciden con los periodos de publicación y actualización del catastro para libre denunciabilidad.",
+              },
+              {
+                text: "Marzo, junio y septiembre.",
+                isCorrect: true,
+                rationale: "Son fechas de alta tensión competitiva donde los inversionistas monitorean el sistema para captar áreas con potencial geológico.",
+              },
+              {
+                text: "Diciembre y julio, coincidiendo con las fiestas patrias.",
+                isCorrect: false,
+                rationale: "El calendario administrativo sigue trimestres específicos para la gestión del catastro minero nacional.",
+              },
+              {
+                text: "Cualquier mes siempre que se publique en el diario oficial.",
+                isCorrect: false,
+                rationale: "La ley establece ventanas temporales fijas para organizar la demanda y asegurar la transparencia en la reasignación.",
+              },
+            ],
+            hint: "Son tres meses distribuidos a lo largo del año administrativo.",
+          },
+          {
+            question: "Respecto a la minería ilegal, ¿por qué la pena privativa de libertad de 4 a 8 años suele tener poco poder disuasivo real?",
+            answerOptions: [
+              {
+                text: "Porque los jueces siempre otorgan libertad condicional.",
+                isCorrect: false,
+                rationale: "Aunque ocurre, la razón de fondo presentada es la estructura de costos y beneficios del negocio ilegal.",
+              },
+              {
+                text: "Porque el riesgo penal es absorbido como un simple costo operativo frente a los altos márgenes del oro.",
+                isCorrect: true,
+                rationale: "La inmensa rentabilidad permite a las organizaciones criminales asumir la persecución penal sin detener sus operaciones.",
+              },
+              {
+                text: "Debido a que no existen cárceles suficientes en las zonas mineras.",
+                isCorrect: false,
+                rationale: "La disuasión falla por el incentivo económico, no principalmente por la infraestructura carcelaria regional.",
+              },
+              {
+                text: "Porque la ley solo se aplica a la minería metálica.",
+                isCorrect: false,
+                rationale: "La normativa contra la minería ilegal es amplia, pero enfrenta barreras económicas de implementación.",
+              },
+            ],
+            hint: "Considere la relación entre el beneficio económico del mercado negro y el riesgo de la sanción.",
+          },
+          {
+            question: "¿Qué diferencia operativa fundamental existe entre la minería metálica y la no metálica según el material de origen?",
+            answerOptions: [
+              {
+                text: "La minería metálica no requiere concesiones, la no metálica sí.",
+                isCorrect: false,
+                rationale: "Ambas requieren concesiones, pero sus modelos de negocio y mercados son divergentes.",
+              },
+              {
+                text: "La metálica está atada a commodities globales, mientras que la no metálica responde a demanda interna elástica.",
+                isCorrect: true,
+                rationale: "Los precios de los metales dependen de bolsas internacionales, mientras que materiales como la cal o agregados dependen de la construcción local.",
+              },
+              {
+                text: "Solo la minería metálica requiere certificación ambiental del SENACE.",
+                isCorrect: false,
+                rationale: "Toda actividad extractiva debe cumplir con el marco regulatorio ambiental independientemente del producto.",
+              },
+              {
+                text: "La minería no metálica es siempre de duración definida a 10 años.",
+                isCorrect: false,
+                rationale: "La duración de la concesión minera estándar es indefinida mientras se cumplan las obligaciones.",
+              },
+            ],
+            hint: "Piense en quién compra el producto y cómo fluctúa su precio.",
+          },
+          {
+            question: "Para un operador de mediana minería, ¿cuál es la vía obligatoria para tramitar su petitorio según la modernización administrativa?",
+            answerOptions: [
+              {
+                text: "Presencialmente ante el Gobierno Regional correspondiente.",
+                isCorrect: false,
+                rationale: "Los gobiernos regionales manejan la pequeña minería y artesanal; el régimen general es competencia del gobierno central.",
+              },
+              {
+                text: "Vía virtual a través de la extranet del Ministerio o la plataforma Gob.pe.",
+                isCorrect: true,
+                rationale: "El régimen general está totalmente digitalizado para agilizar el proceso y reducir la burocracia física.",
+              },
+              {
+                text: "Mediante una carta notarial enviada al Consejo de Minería.",
+                isCorrect: false,
+                rationale: "El Consejo es un órgano de apelación, no la ventanilla de recepción de petitorios iniciales.",
+              },
+              {
+                text: "A través de un concurso público convocado por ProInversión.",
+                isCorrect: false,
+                rationale: "Los petitorios ordinarios se formulan a solicitud de parte siguiendo la cuadrícula minera, no por concurso.",
+              },
+            ],
+            hint: "Busque la opción que mencione el entorno digital oficial del Estado Peruano.",
+          },
+          {
+            question: "Usted está evaluando la viabilidad de un proyecto. ¿Por qué es crítico consultar la libre disponibilidad del área en plataformas como Pagalop antes de pagar tasas?",
+            answerOptions: [
+              {
+                text: "Para obtener un descuento en el pago del derecho de vigencia.",
+                isCorrect: false,
+                rationale: "Las tasas son fijas y no dependen de consultas previas.",
+              },
+              {
+                text: "Como medida de mitigación de riesgo financiero, ya que las tasas administrativas no son reembolsables.",
+                isCorrect: true,
+                rationale: "Si el petitorio nace destinado al rechazo por superposición, el capital invertido en el trámite se pierde por completo.",
+              },
+              {
+                text: "Porque el sistema bloquea automáticamente el área tras la consulta.",
+                isCorrect: false,
+                rationale: "La consulta es informativa; el bloqueo solo ocurre con la presentación formal y el pago.",
+              },
+              {
+                text: "Es un requisito legal para que el petitorio sea admitido a trámite.",
+                isCorrect: false,
+                rationale: "No es obligatorio, pero omitirlo es una mala práctica estratégica que pone en riesgo el flujo de caja.",
+              },
+            ],
+            hint: "Piense en qué sucede con el dinero pagado al Estado si el trámite es rechazado.",
+          },
+          {
+            question: "¿Qué documento gestionado ante el Ministerio de Cultura es innegociable antes de iniciar cualquier remoción de tierra en un proyecto minero?",
+            answerOptions: [
+              {
+                text: "El EIA (Estudio de Impacto Ambiental).",
+                isCorrect: false,
+                rationale: "El EIA se gestiona ante el SENACE o el MINEM, no ante el Ministerio de Cultura.",
+              },
+              {
+                text: "El CIRA (Certificado de Inexistencia de Restos Arqueológicos).",
+                isCorrect: true,
+                rationale: "Es vital para garantizar que la operación no destruirá patrimonio cultural del país.",
+              },
+              {
+                text: "La Licencia de Uso de Agua de la ANA.",
+                isCorrect: false,
+                rationale: "Este permiso corresponde a la Autoridad Nacional del Agua, no al ámbito de cultura.",
+              },
+              {
+                text: "El Título de Concesión de Beneficio.",
+                isCorrect: false,
+                rationale: "Este es un título administrativo de derecho minero, no una certificación de protección de restos arqueológicos.",
+              },
+            ],
+            hint: "Relacione el permiso con la protección del patrimonio histórico y arqueológico.",
+          },
+          {
+            question: "¿Cuál es el plazo que tiene la autoridad para emitir los informes técnicos y legales iniciales tras la presentación de un petitorio?",
+            answerOptions: [
+              {
+                text: "30 días calendario.",
+                isCorrect: false,
+                rationale: "Este plazo es demasiado largo para la fase inicial de revisión técnica de coordenadas.",
+              },
+              {
+                text: "7 días hábiles.",
+                isCorrect: true,
+                rationale: "La celeridad administrativa busca confirmar rápidamente si el petitorio cumple con los requisitos básicos de forma y ubicación.",
+              },
+              {
+                text: "24 horas.",
+                isCorrect: false,
+                rationale: "Dada la complejidad de la red matemática de cuadrículas, se requiere un tiempo prudente de análisis técnico.",
+              },
+              {
+                text: "60 días hábiles.",
+                isCorrect: false,
+                rationale: "Ese plazo se asocia más a las etapas de oposición de terceros que a la revisión interna de la autoridad.",
+              },
+            ],
+            hint: "Es un periodo de tiempo muy corto destinado a la validación técnica inicial.",
+          },
+          {
+            question: "En el contexto de la gestión estratégica, ¿qué significa que la concesión minera tenga una duración indefinida?",
+            answerOptions: [
+              {
+                text: "Que el titular no tiene que volver a realizar ningún trámite tras la titulación.",
+                isCorrect: false,
+                rationale: "La duración es indefinida pero está sujeta a obligaciones periódicas y mantenimiento.",
+              },
+              {
+                text: "Que el derecho se mantiene vigente siempre que se cumpla con el pago de vigencia y obligaciones de trabajo.",
+                isCorrect: true,
+                rationale: "A diferencia de otros países con plazos fijos, en el Perú el título se conserva mediante el cumplimiento de deberes financieros y operativos.",
+              },
+              {
+                text: "Que el Estado no puede revocar la concesión bajo ninguna circunstancia.",
+                isCorrect: false,
+                rationale: "La concesión puede caducar o anularse si se incumplen las condiciones legales establecidas.",
+              },
+              {
+                text: "Que los minerales pertenecen al concesionario incluso si no los extrae.",
+                isCorrect: false,
+                rationale: "El derecho es para explorar y explotar; el mineral en el subsuelo sigue siendo patrimonio de la Nación hasta su extracción.",
+              },
+            ],
+            hint: "La clave es la continuidad supeditada al cumplimiento de responsabilidades.",
+          },
+          {
+            question: "¿Qué diferencia al TASEM del Consejo de Minería?",
+            answerOptions: [
+              {
+                text: "El TASEM otorga las concesiones y el Consejo las anula.",
+                isCorrect: false,
+                rationale: "Ninguno de los dos otorga concesiones inicialmente; esa es función de la dirección correspondiente del ministerio o INGEMMET.",
+              },
+              {
+                text: "El Consejo resuelve sobre derechos y titulación, mientras que el TASEM interviene en materias sancionadoras.",
+                isCorrect: true,
+                rationale: "Sus jurisdicciones están claramente separadas: uno gestiona el derecho al título y el otro las penalidades por infracciones.",
+              },
+              {
+                text: "El TASEM es para la gran minería y el Consejo para la pequeña minería.",
+                isCorrect: false,
+                rationale: "Ambos órganos tienen alcance nacional según sus competencias específicas de titulación o sanción.",
+              },
+              {
+                text: "No hay diferencia; son dos nombres para la misma entidad administrativa.",
+                isCorrect: false,
+                rationale: "Son entidades distintas con flujos procedimentales y objetivos legales diferentes.",
+              },
+            ],
+            hint: "Uno se enfoca en el 'título' y el otro en el 'castigo'.",
+          },
+
+          {
+            question: "¿Qué sucede una vez que se agota la vía administrativa tras una resolución firme del Consejo de Minería?",
+            answerOptions: [
+              {
+                text: "El caso se archiva definitivamente sin opción a revisión.",
+                isCorrect: false,
+                rationale: "El sistema jurídico peruano garantiza el derecho a la tutela jurisdiccional efectiva fuera del ejecutivo.",
+              },
+              {
+                text: "Se abre la puerta para iniciar acciones en las instancias judiciales si el conflicto persiste.",
+                isCorrect: true,
+                rationale: "La vía judicial (contencioso-administrativa) es el siguiente paso natural tras agotar los recursos dentro del Ministerio.",
+              },
+              {
+                text: "El solicitante debe volver a presentar el petitorio desde cero.",
+                isCorrect: false,
+                rationale: "La resolución firme pone fin al trámite administrativo; no se reinicia, se impugna judicialmente o se acata.",
+              },
+              {
+                text: "La concesión pasa automáticamente a ser propiedad de la comunidad local.",
+                isCorrect: false,
+                rationale: "La propiedad minera sigue las reglas del derecho administrativo y no se transfiere de esa forma por conflictos procesales.",
+              },
+            ],
+            hint: "Considere el paso del Poder Ejecutivo al Poder Judicial.",
+          },
+        ],
+        topics: {
+          covered: ["Marco Regulatorio Minero", "Tipología de Concesiones", "Procedimiento Administrativo de Titulación", "Naturaleza Jurídica de la Propiedad Minera", "Gestión Socioambiental y Licencia Social", "Mantenimiento y Extinción de Derechos Mineros"],
+          followUp: ["Estrategias de Mitigación de Riesgo Geológico y Financiero", "Procedimientos de Consulta Previa en Minería", "Derecho Administrativo Sancionador y el rol del TASEM", "Logística y Control de Costos en Minería No Metálica", "Trazabilidad y Prevención en la Comercialización de Minerales"],
+        },
+      };
+
+      let currentQuestionIndex = 0;
+      let userAnswers = Array(quizData.quiz.length).fill(null); // Almacena el índice seleccionado de cada pregunta
+      let isReviewMode = false;
+
+      // Inserción inicial de datos en portada y reporte
+      window.addEventListener("DOMContentLoaded", () => {
+        const coveredList = document.getElementById("covered-topics-list");
+        quizData.topics.covered.forEach((topic) => {
+          const li = document.createElement("li");
+          li.className = "flex items-start gap-3 text-slate-600";
+          li.innerHTML = `<i class="ph-fill ph-check-circle text-brand-500 mt-0.5 shrink-0 text-base"></i><span class="leading-snug">${topic}</span>`;
+          coveredList.appendChild(li);
+        });
+
+        const suggestedList = document.getElementById("suggested-topics-list");
+        quizData.topics.followUp.forEach((topic) => {
+          const li = document.createElement("li");
+          li.className = "flex items-start gap-3 text-indigo-950/80";
+          li.innerHTML = `<i class="ph-bold ph-trend-up text-brand-500 mt-0.5 shrink-0 text-base"></i><span class="leading-snug">${topic}</span>`;
+          suggestedList.appendChild(li);
+        });
+      });
+
+      // Transición: Iniciar Cuestionario
+      function startQuiz() {
+        document.getElementById("welcome-screen").classList.add("hidden");
+        document.getElementById("quiz-screen").classList.remove("hidden");
+        document.getElementById("quiz-screen").classList.add("fade-in-up");
+
+        isReviewMode = false;
+        currentQuestionIndex = 0;
+        userAnswers.fill(null);
+
+        document.getElementById("review-banner").classList.add("hidden");
+        loadQuestion();
+      }
+
+      function renderProgressBar() {
+        const container = document.getElementById("progress-segments");
+        container.innerHTML = "";
+
+        quizData.quiz.forEach((_, idx) => {
+          const segment = document.createElement("div");
+          segment.className = "h-2 flex-1 rounded-full transition-all duration-300";
+
+          if (isReviewMode) {
+            // En modo de revisión, se pintan según si la respuesta fue correcta, incorrecta u omitida
+            const ans = userAnswers[idx];
+            if (ans === null) {
+              segment.className += ` ${idx === currentQuestionIndex ? "ring-2 ring-indigo-600 ring-offset-2" : ""} bg-amber-400`;
+            } else {
+              const isCorrect = quizData.quiz[idx].answerOptions[ans].isCorrect;
+              segment.className += ` ${idx === currentQuestionIndex ? "ring-2 ring-indigo-600 ring-offset-2" : ""} ${isCorrect ? "bg-emerald-500" : "bg-rose-500"}`;
+            }
+          } else {
+            // Modo estándar de cuestionario activo
+            if (idx < currentQuestionIndex) {
+              const ans = userAnswers[idx];
+              if (ans === null) {
+                // Omitida en naranja/ámbar
+                segment.className += " bg-amber-400";
+              } else {
+                const isCorrect = quizData.quiz[idx].answerOptions[ans].isCorrect;
+                segment.className += ` ${isCorrect ? "bg-emerald-500" : "bg-rose-500"}`;
+              }
+            } else if (idx === currentQuestionIndex) {
+              segment.className += " bg-brand-500 animate-pulse";
+            } else {
+              segment.className += " bg-slate-200";
+            }
+          }
+          container.appendChild(segment);
+        });
+      }
+
+      function loadQuestion() {
+        const currentQuestion = quizData.quiz[currentQuestionIndex];
+
+        // Cerrar pista si estaba abierta
+        document.getElementById("hint-box").classList.remove("active");
+
+        // Habilitar y actualizar texto de pista
+        const hintBtn = document.getElementById("hint-button");
+        if (currentQuestion.hint && !isReviewMode) {
+          hintBtn.classList.remove("hidden");
+          document.getElementById("hint-text").innerText = currentQuestion.hint;
+        } else {
+          hintBtn.classList.add("hidden");
+        }
+
+        // Actualizar títulos e índices
+        document.getElementById("question-index-badge").innerText = `Pregunta ${currentQuestionIndex + 1} de ${quizData.quiz.length}`;
+        document.getElementById("question-text").innerText = currentQuestion.question;
+
+        // Renderizar barra de progreso segmentada
+        renderProgressBar();
+
+        // Renderizar Opciones de Respuesta
+        const optionsContainer = document.getElementById("options-container");
+        optionsContainer.innerHTML = "";
+
+        const alphabet = ["A", "B", "C", "D"];
+        const answeredIndex = userAnswers[currentQuestionIndex];
+        const isAnswered = answeredIndex !== null;
+
+        currentQuestion.answerOptions.forEach((option, index) => {
+          // Creación del contenedor de la opción
+          const optionCard = document.createElement("div");
+          optionCard.className = "w-full text-left p-5 rounded-2xl border-2 transition-all flex flex-col relative duration-200 shadow-sm";
+
+          // Determinación de clases visuales según el estado
+          if (isAnswered || isReviewMode) {
+            const activeSelectedIdx = answeredIndex;
+            const thisCardSelected = activeSelectedIdx === index;
+
+            if (option.isCorrect) {
+              // La opción correcta se resalta en verde
+              optionCard.className += " border-emerald-200 bg-emerald-50/50 text-emerald-950";
+            } else if (thisCardSelected && !option.isCorrect) {
+              // La opción elegida por el usuario que es incorrecta
+              optionCard.className += " border-rose-200 bg-rose-50/50 text-rose-950";
+            } else {
+              // Las demás opciones no se atenúan drásticamente (contraste mejorado)
+              optionCard.className += " border-slate-100 bg-slate-50/40 text-slate-500 opacity-90";
+            }
+          } else {
+            // Estado inicial seleccionable
+            optionCard.className += " border-slate-100 bg-white hover:border-brand-200 hover:shadow-md hover:shadow-brand-50/40 cursor-pointer active:scale-[0.99] group";
+            optionCard.onclick = () => selectOption(index);
+          }
+
+          // Generación del bloque principal de texto con alineación impecable
+          const letterClass = isAnswered || isReviewMode ? (option.isCorrect ? "text-emerald-500" : answeredIndex === index ? "text-rose-400" : "text-slate-400") : "text-slate-400 group-hover:text-brand-500";
+
+          const textClass = isAnswered || isReviewMode ? (option.isCorrect ? "text-emerald-950 font-bold" : answeredIndex === index ? "text-rose-950 font-bold" : "text-slate-600 font-medium") : "text-slate-700 font-medium";
+
+          // Estructura de alineación: rationale alineado con el texto, no con la letra del prefijo
+          let cardContent = `
+            <div class="flex items-start gap-3 w-full">
+              <span class="font-extrabold ${letterClass} select-none transition-colors shrink-0">${alphabet[index]}.</span>
+              <div class="flex-1 min-w-0">
+                <p class="${textClass} leading-relaxed transition-colors">${option.text}</p>
+          `;
+
+          if (isAnswered || isReviewMode) {
+            const activeSelectedIdx = answeredIndex;
+            const thisCardSelected = activeSelectedIdx === index;
+
+            if (option.isCorrect) {
+              // Indicador de respuesta correcta
+              cardContent += `
+                <div class="text-emerald-600 font-extrabold text-sm mt-2 flex items-center gap-1.5 animate-fadeIn">
+                  <i class="ph-bold ph-check"></i> Respuesta correcta
+                </div>
+                <p class="text-sm text-emerald-800/85 leading-relaxed mt-1.5 font-semibold animate-fadeIn">
+                  ${option.rationale}
+                </p>
+              `;
+            } else if (thisCardSelected && !option.isCorrect) {
+              // Indicador de error seleccionado
+              cardContent += `
+                <div class="text-rose-600 font-extrabold text-sm mt-2 flex items-center gap-1.5 animate-fadeIn">
+                  <i class="ph-bold ph-x"></i> Respuesta incorrecta
+                </div>
+                <p class="text-sm text-rose-800/85 leading-relaxed mt-1.5 font-semibold animate-fadeIn">
+                  ${option.rationale}
+                </p>
+              `;
+            } else {
+              // Rationale de las incorrectas no elegidas (en gris de buen contraste)
+              cardContent += `
+                <p class="text-xs text-slate-500/80 leading-relaxed mt-2.5 font-normal border-t border-slate-100/60 pt-2 animate-fadeIn">
+                  ${option.rationale}
+                </p>
+              `;
+            }
+          }
+
+          cardContent += `
+              </div>
+            </div>
+          `;
+
+          optionCard.innerHTML = cardContent;
+          optionsContainer.appendChild(optionCard);
+        });
+
+        // Configurar botones de navegación
+        const prevBtn = document.getElementById("prev-button");
+        const nextBtn = document.getElementById("next-button");
+
+        // El botón anterior siempre se puede visualizar si estamos adelante de la primera pregunta
+        if (currentQuestionIndex > 0) {
+          prevBtn.classList.remove("hidden");
+          prevBtn.disabled = false;
+        } else {
+          prevBtn.classList.add("hidden");
+          prevBtn.disabled = true;
+        }
+
+        if (isReviewMode) {
+          nextBtn.disabled = false;
+          nextBtn.className = "w-full sm:w-auto px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-2xl shadow-lg shadow-brand-200 active:scale-95 transition-all flex items-center justify-center gap-2 ml-auto";
+
+          if (currentQuestionIndex === quizData.quiz.length - 1) {
+            nextBtn.innerHTML = `Finalizar Revisión <i class="ph-bold ph-check text-lg"></i>`;
+          } else {
+            nextBtn.innerHTML = `Siguiente <i class="ph-bold ph-caret-right text-lg"></i>`;
+          }
+        } else {
+          // El botón Siguiente siempre está habilitado para permitir la omisión libre por clic
+          nextBtn.disabled = false;
+          if (isAnswered) {
+            nextBtn.className = "w-full sm:w-auto px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-2xl shadow-lg shadow-brand-200 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 ml-auto group";
+            nextBtn.innerHTML = `Siguiente <i class="ph-bold ph-caret-right text-lg transform group-hover:translate-x-1 transition-transform"></i>`;
+          } else {
+            // Estilo para Omitir Pregunta
+            nextBtn.className = "w-full sm:w-auto px-8 py-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl shadow-md active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 ml-auto group";
+            nextBtn.innerHTML = `Omitir <i class="ph-bold ph-caret-right text-lg transform group-hover:translate-x-1 transition-transform"></i>`;
+          }
+        }
+      }
+
+      function toggleHint() {
+        const hintBox = document.getElementById("hint-box");
+        hintBox.classList.toggle("active");
+      }
+
+      function selectOption(selectedIndex) {
+        userAnswers[currentQuestionIndex] = selectedIndex;
+        loadQuestion();
+      }
+
+      function nextQuestion() {
+        if (isReviewMode) {
+          if (currentQuestionIndex < quizData.quiz.length - 1) {
+            currentQuestionIndex++;
+            loadQuestion();
+          } else {
+            exitReview();
+          }
+        } else {
+          currentQuestionIndex++;
+          if (currentQuestionIndex < quizData.quiz.length) {
+            loadQuestion();
+          } else {
+            showResults();
+          }
+        }
+      }
+
+      function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+          currentQuestionIndex--;
+          loadQuestion();
+        }
+      }
+
+      function calculateStats() {
+        let correct = 0;
+        let incorrect = 0;
+        let omitted = 0;
+
+        quizData.quiz.forEach((q, idx) => {
+          const ans = userAnswers[idx];
+          if (ans === null) {
+            omitted++;
+          } else if (q.answerOptions[ans].isCorrect) {
+            correct++;
+          } else {
+            incorrect++;
+          }
+        });
+
+        return { correct, incorrect, omitted };
+      }
+
+      function showResults() {
+        document.getElementById("quiz-screen").classList.add("hidden");
+        const resultScreen = document.getElementById("result-screen");
+        resultScreen.classList.remove("hidden");
+
+        const stats = calculateStats();
+        const total = quizData.quiz.length;
+        const scorePercent = Math.round((stats.correct / total) * 100);
+
+        // Actualizar datos del círculo
+        document.getElementById("score-fraction").innerText = `${stats.correct} / ${total}`;
+
+        // Cargar estadísticas en la sección de resumen lateral
+        document.getElementById("stats-correct").innerText = stats.correct;
+        document.getElementById("stats-incorrect").innerText = stats.incorrect;
+        document.getElementById("stats-omitted").innerText = stats.omitted;
+
+        // Mostrar omitidas únicamente si aplica
+        const omittedContainer = document.getElementById("stats-omitted-container");
+        if (stats.omitted > 0) {
+          omittedContainer.classList.remove("hidden");
+        } else {
+          omittedContainer.classList.add("hidden");
+        }
+
+        // Animación dinámica del porcentaje
+        let currentPct = 0;
+        const scoreText = document.getElementById("final-score");
+        const duration = 1200;
+        const intervalTime = 20;
+        const steps = duration / intervalTime;
+        const increment = scorePercent / steps;
+
+        const counterInterval = setInterval(() => {
+          currentPct += increment;
+          if (currentPct >= scorePercent) {
+            currentPct = scorePercent;
+            clearInterval(counterInterval);
+          }
+          scoreText.innerText = `${Math.floor(currentPct)}%`;
+        }, intervalTime);
+
+        // Animación de la dona SVG
+        const circlePath = document.getElementById("score-circle-path");
+        const radius = circlePath.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+
+        circlePath.style.strokeDasharray = `${circumference} ${circumference}`;
+        const offset = circumference - (scorePercent / 100) * circumference;
+
+        circlePath.classList.remove("stroke-brand-500", "stroke-emerald-500", "stroke-amber-500", "stroke-rose-500");
+        scoreText.classList.remove("text-emerald-600", "text-amber-600", "text-rose-600");
+
+        if (scorePercent >= 80) {
+          circlePath.classList.add("stroke-emerald-500");
+          scoreText.classList.add("text-emerald-600");
+        } else if (scorePercent >= 50) {
+          circlePath.classList.add("stroke-amber-500");
+          scoreText.classList.add("text-amber-600");
+        } else {
+          circlePath.classList.add("stroke-rose-500");
+          scoreText.classList.add("text-rose-600");
+        }
+
+        setTimeout(() => {
+          circlePath.style.strokeDashoffset = offset;
+        }, 100);
+
+        if (scorePercent >= 80) {
+          launchConfetti();
+        }
+      }
+
+      function launchConfetti() {
+        const container = document.getElementById("confeti-container");
+        container.classList.remove("hidden");
+        container.innerHTML = "";
+
+        const colors = ["#6366f1", "#ff7e5f", "#10b981", "#3b82f6", "#f59e0b"];
+
+        for (let i = 0; i < 55; i++) {
+          const div = document.createElement("div");
+          div.className = "absolute w-3 h-3 rounded-sm confetti-slow shadow-sm";
+          div.style.left = `${Math.random() * 100}%`;
+          div.style.top = `-${Math.random() * 20}px`;
+          div.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          div.style.animationDelay = `${Math.random() * 2.5}s`;
+          div.style.transform = `rotate(${Math.random() * 360}deg)`;
+          container.appendChild(div);
+        }
+      }
+
+      function enterReviewMode() {
+        isReviewMode = true;
+        currentQuestionIndex = 0;
+
+        document.getElementById("result-screen").classList.add("hidden");
+        document.getElementById("review-banner").classList.remove("hidden");
+        document.getElementById("quiz-screen").classList.remove("hidden");
+
+        loadQuestion();
+      }
+
+      function exitReview() {
+        isReviewMode = false;
+        document.getElementById("quiz-screen").classList.add("hidden");
+        document.getElementById("review-banner").classList.add("hidden");
+        showResults();
+      }
+
+      function restartQuiz() {
+        document.getElementById("result-screen").classList.add("hidden");
+        document.getElementById("confeti-container").classList.add("hidden");
+        document.getElementById("welcome-screen").classList.remove("hidden");
+        document.getElementById("welcome-screen").classList.add("fade-in-up");
+
+        const circlePath = document.getElementById("score-circle-path");
+        const circumference = circlePath.r.baseVal.value * 2 * Math.PI;
+        circlePath.style.strokeDashoffset = circumference;
+      }
+    </script>
+  </body>
+</html>
