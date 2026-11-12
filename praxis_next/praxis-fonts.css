@@ -1,0 +1,227 @@
+      /* Praxis Next */
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Regular.otf")
+          format("opentype");
+        font-weight: 400;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Italic.otf")
+          format("opentype");
+        font-weight: 400;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Medium.otf")
+          format("opentype");
+        font-weight: 500;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Medium_Italic.otf")
+          format("opentype");
+        font-weight: 500;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_SemiBold.otf")
+          format("opentype");
+        font-weight: 600;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_SemiBold_Italic.otf")
+          format("opentype");
+        font-weight: 600;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Bold.otf")
+          format("opentype");
+        font-weight: 700;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Bold_Italic.otf")
+          format("opentype");
+        font-weight: 700;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Heavy.otf")
+          format("opentype");
+        font-weight: 800;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Heavy_Italic.otf")
+          format("opentype");
+        font-weight: 800;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Black.otf")
+          format("opentype");
+        font-weight: 900;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Black_Italic.otf")
+          format("opentype");
+        font-weight: 900;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_ExtraBlack.otf")
+          format("opentype");
+        font-weight: 950;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_ExtraBlack_Italic.otf")
+          format("opentype");
+        font-weight: 950;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Ultra.otf")
+          format("opentype");
+        font-weight: 1000;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Ultra_Italic.otf")
+          format("opentype");
+        font-weight: 1000;
+        font-style: italic;
+      }
+
+      /* Praxis Next Condensed */
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_Regular.otf")
+          format("opentype");
+        font-weight: 400;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_It.otf")
+          format("opentype");
+        font-weight: 400;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_Medium.otf")
+          format("opentype");
+        font-weight: 500;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_Medium_It.otf")
+          format("opentype");
+        font-weight: 500;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_SemiBold.otf")
+          format("opentype");
+        font-weight: 600;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_SemiBold_It.otf")
+          format("opentype");
+        font-weight: 600;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_Bold.otf")
+          format("opentype");
+        font-weight: 700;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_Bold_It.otf")
+          format("opentype");
+        font-weight: 700;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_Heavy.otf")
+          format("opentype");
+        font-weight: 800;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_Heavy_It.otf")
+          format("opentype");
+        font-weight: 800;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_Black.otf")
+          format("opentype");
+        font-weight: 900;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_Black_It.otf")
+          format("opentype");
+        font-weight: 900;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_ExtraBlack.otf")
+          format("opentype");
+        font-weight: 950;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_ExtraBlack_It.otf")
+          format("opentype");
+        font-weight: 950;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_Ultra.otf")
+          format("opentype");
+        font-weight: 1000;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Praxis Next Cn";
+        src: url("https://raw.githubusercontent.com/videoconferenciasdiplomado-alt/imagenes/main/praxis_next/fonnts.com-Praxis_Next_Cn_Ultra_It.otf")
+          format("opentype");
+        font-weight: 1000;
+        font-style: italic;
+      }
